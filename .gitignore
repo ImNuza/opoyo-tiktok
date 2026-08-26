@@ -12,3 +12,4 @@ data/catalog.jsonl.gz
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
+.worktrees/
