@@ -3,6 +3,11 @@ from __future__ import annotations
 import os
 
 
+def apply_order(shortlist: list[str], proposed: list[str]) -> list[str]:
+    allowed = set(shortlist)
+    return [item for item in proposed if item in allowed]
+
+
 def rerank(
     shortlist: list[str],
     message: str,
@@ -15,7 +20,6 @@ def rerank(
         if not key:
             return shortlist
         # No network call in this slice. Keep shortlist order and drop unknowns.
-        allowed = set(shortlist)
-        return [item for item in shortlist if item in allowed]
+        return apply_order(shortlist, shortlist)
     except Exception:
         return shortlist

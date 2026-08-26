@@ -42,7 +42,8 @@ _CATEGORY_WORDS = (
     "sneakers",
 )
 
-_SIZE_TOKENS = ("xs", "s", "m", "l", "xl", "xxl")
+_BARE_SIZE_TOKENS = ("xs", "xl", "xxl")
+_PREFIX_SIZE_TOKENS = ("xs", "s", "m", "l", "xl", "xxl")
 
 _COLOR_RE = re.compile(
     r"\b(" + "|".join(_COLOR_WORDS) + r")\b",
@@ -56,18 +57,19 @@ _CATEGORY_RE = re.compile(
     r"\b(" + "|".join(_CATEGORY_WORDS) + r")\b",
     re.IGNORECASE,
 )
-_SIZE_TOKEN_RE = re.compile(
-    r"\b(" + "|".join(_SIZE_TOKENS) + r")\b",
+_SIZE_PREFIX_RE = re.compile(
+    r"\bsize\s+(" + "|".join(_PREFIX_SIZE_TOKENS) + r"|\d+)\b",
     re.IGNORECASE,
 )
-_SIZE_NUMBER_RE = re.compile(r"\bsize\s+(\d+)\b", re.IGNORECASE)
+_SIZE_BARE_RE = re.compile(
+    r"\b(" + "|".join(_BARE_SIZE_TOKENS) + r")\b",
+    re.IGNORECASE,
+)
 _BUDGET_RE = re.compile(
     r"(?:under\s+\$?\s*(\d+(?:\.\d+)?)|\$\s*(\d+(?:\.\d+)?))",
     re.IGNORECASE,
 )
 _BRAND_BY_RE = re.compile(r"\bby\s+([A-Za-z][\w-]*)", re.IGNORECASE)
-
-_RESERVED_LOWER = {w.lower() for w in _COLOR_WORDS + _MATERIAL_WORDS}
 
 
 def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
@@ -89,13 +91,13 @@ def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
     if category_match:
         slots["category"] = category_match.group(1).lower()
 
-    size_number = _SIZE_NUMBER_RE.search(text)
-    if size_number:
-        slots["size"] = size_number.group(1)
+    size_prefix = _SIZE_PREFIX_RE.search(text)
+    if size_prefix:
+        slots["size"] = size_prefix.group(1).lower()
     else:
-        size_token = _SIZE_TOKEN_RE.search(text)
-        if size_token:
-            slots["size"] = size_token.group(1).lower()
+        size_bare = _SIZE_BARE_RE.search(text)
+        if size_bare:
+            slots["size"] = size_bare.group(1).lower()
 
     budget_match = _BUDGET_RE.search(text)
     if budget_match:
@@ -109,15 +111,6 @@ def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
     brand_by = _BRAND_BY_RE.search(text)
     if brand_by:
         slots["brand"] = brand_by.group(1)
-    elif profile:
-        tags = profile.get("preference_tags") or []
-        for tag in tags:
-            if not isinstance(tag, str):
-                continue
-            if tag.lower() in _RESERVED_LOWER:
-                continue
-            slots["brand"] = tag
-            break
 
     # Drop anything outside the allowed attribute set (defensive).
     return {k: v for k, v in slots.items() if k in ALLOWED_ATTRIBUTES}

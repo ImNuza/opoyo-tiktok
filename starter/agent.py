@@ -51,10 +51,11 @@ class Agent:
                     state.slots[attr] = value
 
             query = build_query(user_message, state.slots)
-            shortlist = self.retriever.search(query, limit=50)
+            matched = self.retriever.search(query, limit=81)
+            shortlist = matched[:50]
             ranked = rerank(shortlist, user_message, state.slots)
 
-            action, attr = decide(state, turn, candidate_count=len(shortlist))
+            action, attr = decide(state, turn, candidate_count=len(matched))
 
             ask_attribute: str | None = None
             if action == ASK and attr:

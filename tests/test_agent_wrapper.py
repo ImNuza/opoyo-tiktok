@@ -86,6 +86,25 @@ class AgentWrapperTest(unittest.TestCase):
         out = self.agent.respond("ghost", "blue shoe", turn=1, top_k=10)
         self.assertIn("recommendations", out)
 
+    def test_huge_pool_hard_constraint_asks(self) -> None:
+        rows = [
+            {
+                "parent_asin": f"P{i}",
+                "title": f"Red running shoe {i}",
+                "categories": ["Shoes"],
+                "features": ["mesh"],
+                "details": {},
+                "store": "Example",
+                "description": "red running shoe",
+            }
+            for i in range(90)
+        ]
+        agent = Agent(write_catalog(rows))
+        agent.reset("s1", {})
+        out = agent.respond("s1", "I want red", turn=1, top_k=10)
+        self.assertEqual(out["ask_attribute"], "category")
+        self.assertGreaterEqual(len(out["recommendations"]), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
