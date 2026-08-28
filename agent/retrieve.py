@@ -84,9 +84,7 @@ class Retriever:
             cursor.executemany("INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?)", batch)
         self.connection.commit()
 
-    def search(self, query: str, limit: int = 50) -> list[str]:
-        unique_terms = list(dict.fromkeys(_terms(query)))[:40]
-        expression = " OR ".join(f'"{term}"' for term in unique_terms)
+    def _match(self, expression: str, limit: int) -> list[str]:
         if not expression:
             return []
         rows = self.connection.execute(
@@ -100,3 +98,35 @@ class Retriever:
             if parent_asin in self.catalog.ids:
                 results.append(parent_asin)
         return results
+
+    def search(
+        self,
+        query: str,
+        limit: int = 50,
+        required: list[str] | None = None,
+    ) -> list[str]:
+        query_terms = list(dict.fromkeys(_terms(query)))[:40]
+        required_terms: list[str] = []
+        for value in required or []:
+            for token in _terms(value):
+                if token not in required_terms:
+                    required_terms.append(token)
+        required_terms = required_terms[:20]
+        extra_terms = [term for term in query_terms if term not in required_terms][:20]
+
+        if required_terms:
+            and_part = " AND ".join(f'"{term}"' for term in required_terms)
+            if extra_terms:
+                or_part = " OR ".join(f'"{term}"' for term in extra_terms)
+                expression = f"({and_part}) AND ({or_part})"
+            else:
+                expression = and_part
+            hits = self._match(expression, limit)
+            if hits:
+                return hits
+            hits = self._match(and_part, limit)
+            if hits:
+                return hits
+
+        expression = " OR ".join(f'"{term}"' for term in query_terms)
+        return self._match(expression, limit)

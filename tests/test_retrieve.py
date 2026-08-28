@@ -57,6 +57,37 @@ class RetrieveTest(unittest.TestCase):
         self.assertIn("jacket", q)
         self.assertIn("need this", q)
 
+    def test_required_terms_and_instead_of_or_blast(self) -> None:
+        path = write_catalog([
+            {
+                "parent_asin": "HIT",
+                "title": "Red running shoe",
+                "categories": ["Shoes"],
+                "features": ["mesh"],
+                "details": {},
+                "store": "Example",
+                "description": "red running shoe",
+            },
+            {
+                "parent_asin": "NOISE",
+                "title": "Red winter coat",
+                "categories": ["Jackets"],
+                "features": ["wool"],
+                "details": {},
+                "store": "Example",
+                "description": "red coat",
+            },
+        ])
+        retriever = Retriever(Catalog(path))
+        or_ids = retriever.search("red running shoe", limit=10)
+        self.assertEqual(set(or_ids), {"HIT", "NOISE"})
+        and_ids = retriever.search(
+            "red running shoe",
+            limit=10,
+            required=["red", "shoe"],
+        )
+        self.assertEqual(and_ids, ["HIT"])
+
 
 if __name__ == "__main__":
     unittest.main()

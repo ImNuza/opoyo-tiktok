@@ -51,7 +51,11 @@ class Agent:
                     state.slots[attr] = value
 
             query = build_query(user_message, state.slots)
-            matched = self.retriever.search(query, limit=81)
+            matched = self.retriever.search(
+                query,
+                limit=81,
+                required=list(state.slots.values()),
+            )
             shortlist = matched[:50]
             ranked = rerank(shortlist, user_message, state.slots)
 
