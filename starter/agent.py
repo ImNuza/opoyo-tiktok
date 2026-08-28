@@ -66,12 +66,19 @@ class Agent:
                 message = "Here are the closest matches I found."
 
             recommendations: list[dict] = []
-            if state.slots:
-                seen: set[str] = set()
-                for parent_asin in ranked:
+            seen: set[str] = set()
+            for parent_asin in ranked:
+                if parent_asin in seen:
+                    continue
+                if not self.catalog.contains(parent_asin):
+                    continue
+                seen.add(parent_asin)
+                recommendations.append({"parent_asin": parent_asin})
+                if len(recommendations) >= top_k:
+                    break
+            if len(recommendations) < top_k:
+                for parent_asin in self.catalog.products:
                     if parent_asin in seen:
-                        continue
-                    if not self.catalog.contains(parent_asin):
                         continue
                     seen.add(parent_asin)
                     recommendations.append({"parent_asin": parent_asin})

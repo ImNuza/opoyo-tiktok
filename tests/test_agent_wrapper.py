@@ -74,6 +74,17 @@ class AgentWrapperTest(unittest.TestCase):
         out = self.agent.respond("s1", "hi", turn=10, top_k=10)
         self.assertIsNone(out["ask_attribute"])
 
+    def test_turn_10_empty_slots_returns_catalog_asins(self) -> None:
+        self.agent.reset("s1", {})
+        out = self.agent.respond("s1", "hi", turn=10, top_k=10)
+        self.assertIsNone(out["ask_attribute"])
+        recs = out["recommendations"]
+        self.assertEqual(len(recs), 2)
+        asins = [row["parent_asin"] for row in recs]
+        self.assertEqual(asins, list(dict.fromkeys(asins)))
+        self.assertTrue(set(asins) <= {"A", "B"})
+        self.assertEqual(set(asins), {"A", "B"})
+
     def test_override_switches_color_slot(self) -> None:
         self.agent.reset("s1", {})
         self.agent.respond("s1", "red leather jacket", turn=1, top_k=10)
