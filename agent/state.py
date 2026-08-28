@@ -23,6 +23,7 @@ class SessionState:
     profile: dict
     slots: dict[str, str] = field(default_factory=dict)
     asked: set[str] = field(default_factory=set)
+    last_asked: str | None = None
     turn: int = 0
 
 

@@ -97,6 +97,17 @@ class AgentWrapperTest(unittest.TestCase):
         out = self.agent.respond("ghost", "blue shoe", turn=1, top_k=10)
         self.assertIn("recommendations", out)
 
+    def test_fills_style_from_matters_reply(self) -> None:
+        self.agent.reset("s1", {})
+        self.agent._sessions["s1"].last_asked = "style"
+        self.agent.respond(
+            "s1",
+            "For that, what matters is: casual.",
+            turn=2,
+            top_k=10,
+        )
+        self.assertEqual(self.agent._sessions["s1"].slots.get("style"), "casual")
+
     def test_huge_pool_hard_constraint_asks(self) -> None:
         rows = [
             {

@@ -6,7 +6,7 @@ from agent.catalog import Catalog
 from agent.policy import ASK, RETRIEVE, decide
 from agent.rerank import rerank
 from agent.retrieve import Retriever, build_query
-from agent.slots import parse_slots
+from agent.slots import HARD_CONSTRAINTS, WEAK_FILL, parse_slots, preference_snippet
 from agent.state import SessionState, apply_override, new_state
 
 
@@ -43,6 +43,13 @@ class Agent:
             state.turn = turn
 
             parsed = parse_slots(user_message, profile=state.profile)
+            if (
+                state.last_asked in WEAK_FILL
+                and state.last_asked not in parsed
+            ):
+                snippet = preference_snippet(user_message)
+                if snippet:
+                    parsed[state.last_asked] = snippet
             for attr, value in parsed.items():
                 current = state.slots.get(attr)
                 if current is not None and current != value:
@@ -54,7 +61,11 @@ class Agent:
             matched = self.retriever.search(
                 query,
                 limit=81,
-                required=list(state.slots.values()),
+                required=[
+                    value
+                    for key, value in state.slots.items()
+                    if key in HARD_CONSTRAINTS
+                ],
             )
             shortlist = matched[:50]
             ranked = rerank(shortlist, user_message, state.slots)
@@ -64,9 +75,11 @@ class Agent:
             ask_attribute: str | None = None
             if action == ASK and attr:
                 state.asked.add(attr)
+                state.last_asked = attr
                 ask_attribute = attr
                 message = f"What {attr} are you looking for?"
             else:
+                state.last_asked = None
                 message = "Here are the closest matches I found."
 
             recommendations: list[dict] = []

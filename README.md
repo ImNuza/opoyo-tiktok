@@ -39,7 +39,7 @@ Official starter on the public set:
 - MRR: 0.068034
 - MTTC: 9.81
 
-Opoyo BM25+policy (public 200): Hit Rate@10 0.53, MRR 0.389948, MTTC 8.29, tech 0.436184.
+Opoyo BM25+policy (public 200): Hit Rate@10 0.55, MRR 0.397954, MTTC 8.255, tech 0.449286.
 
 ## What You Receive
 

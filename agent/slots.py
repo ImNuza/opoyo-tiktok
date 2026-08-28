@@ -114,3 +114,23 @@ def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
 
     # Drop anything outside the allowed attribute set (defensive).
     return {k: v for k, v in slots.items() if k in ALLOWED_ATTRIBUTES}
+
+
+WEAK_FILL = frozenset({"style", "feature", "use_case", "other"})
+HARD_CONSTRAINTS = frozenset({"category", "brand", "budget", "size", "material", "color"})
+_MATTERS_RE = re.compile(r"what matters is:\s*(.+)", re.IGNORECASE)
+_NO_PREF_RE = re.compile(r"don'?t have (an additional )?preference", re.IGNORECASE)
+
+
+def preference_snippet(message: str) -> str | None:
+    if not message or not message.strip():
+        return None
+    if _NO_PREF_RE.search(message):
+        return None
+    match = _MATTERS_RE.search(message)
+    text = match.group(1) if match else message
+    text = re.sub(r"\s+", " ", text).strip(" .;")
+    tokens = [token for token in re.findall(r"[a-z0-9]+", text.lower()) if len(token) > 1][:4]
+    if not tokens:
+        return None
+    return " ".join(tokens)

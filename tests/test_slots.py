@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from agent.slots import parse_slots
+from agent.slots import parse_slots, preference_snippet
 
 
 class SlotsTest(unittest.TestCase):
@@ -39,6 +39,15 @@ class SlotsTest(unittest.TestCase):
 
     def test_empty_message(self) -> None:
         self.assertEqual(parse_slots(""), {})
+
+    def test_preference_snippet_from_evaluator_reply(self) -> None:
+        self.assertEqual(
+            preference_snippet("For that, what matters is: slim fit; breathable mesh."),
+            "slim fit breathable mesh",
+        )
+        self.assertIsNone(
+            preference_snippet("I don't have an additional preference for style.")
+        )
 
 
 if __name__ == "__main__":
