@@ -57,7 +57,12 @@ class Agent:
                 else:
                     state.slots[attr] = value
 
-            query = build_query(user_message, state.slots)
+            tags = [
+                str(tag)
+                for tag in (state.profile.get("preference_tags") or [])
+                if tag
+            ]
+            query = build_query(user_message, state.slots, extra=tags)
             matched = self.retriever.search(
                 query,
                 limit=81,

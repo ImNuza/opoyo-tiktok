@@ -31,7 +31,7 @@ def _terms(text: str) -> list[str]:
     ]
 
 
-def build_query(message: str, slots: dict[str, str]) -> str:
+def build_query(message: str, slots: dict[str, str], extra: list[str] | None = None) -> str:
     parts: list[str] = []
     seen: set[str] = set()
     for value in slots.values():
@@ -48,6 +48,15 @@ def build_query(message: str, slots: dict[str, str]) -> str:
         key = message_text.lower()
         if key not in seen:
             parts.append(message_text)
+    for item in extra or []:
+        text = str(item or "").strip()
+        if not text:
+            continue
+        key = text.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        parts.append(text)
     return " ".join(parts)
 
 

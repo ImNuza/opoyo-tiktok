@@ -57,6 +57,12 @@ class RetrieveTest(unittest.TestCase):
         self.assertIn("jacket", q)
         self.assertIn("need this", q)
 
+    def test_build_query_includes_profile_tags(self) -> None:
+        q = build_query("blue shoe", {"color": "blue"}, extra=["fit", "comfort"])
+        self.assertIn("fit", q)
+        self.assertIn("comfort", q)
+        self.assertIn("blue", q)
+
     def test_required_terms_and_instead_of_or_blast(self) -> None:
         path = write_catalog([
             {
