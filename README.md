@@ -39,7 +39,7 @@ Official starter on the public set:
 - MRR: 0.068034
 - MTTC: 9.81
 
-Opoyo BM25+policy (public 200): Hit Rate@10 0.55, MRR 0.397954, MTTC 8.255, tech 0.449286.
+Opoyo BM25+policy (public 200): Hit Rate@10 0.55 without MiniLM. With local MiniLM cross-encoder (fail-closed): Hit Rate@10 0.61, MRR 0.401907, MTTC 8.105, tech 0.483472.
 
 ## What You Receive
 

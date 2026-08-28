@@ -19,6 +19,10 @@ class RerankTest(unittest.TestCase):
         proposed = ["Z", "C", "A", "Y"]
         self.assertEqual(apply_order(shortlist, proposed), ["C", "A"])
 
+    def test_missing_texts_does_not_require_minilm(self) -> None:
+        ids = ["A", "B"]
+        self.assertEqual(rerank(ids, "blue shoe", {}, texts=None), ids)
+
 
 if __name__ == "__main__":
     unittest.main()

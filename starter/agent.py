@@ -68,7 +68,14 @@ class Agent:
                 ],
             )
             shortlist = matched[:50]
-            ranked = rerank(shortlist, user_message, state.slots)
+            texts: dict[str, str] = {}
+            for parent_asin in shortlist:
+                product = self.catalog.get(parent_asin) or {}
+                title = str(product.get("title") or "")
+                features = product.get("features")
+                feat = " ".join(str(item) for item in features) if isinstance(features, list) else str(features or "")
+                texts[parent_asin] = f"{title} {feat}".strip()
+            ranked = rerank(shortlist, user_message, state.slots, texts=texts)
 
             action, attr = decide(state, turn, candidate_count=len(matched))
 
