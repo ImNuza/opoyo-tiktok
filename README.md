@@ -139,11 +139,7 @@ evaluator/local_evaluator.py      public-set simulator and scorer
 
 ## Judging and Submission Policy
 
-- Participant submission requirements: `docs/submission_rules.md`
-- Participant release checklist: `docs/participant_release_checklist.md`
-- Organizer-only final judging controls: `organizer/JUDGING_RUNBOOK.md`
-- Organizer private release checklist: `organizer/private_release_checklist.md`
-- Judging day operations SOP: `organizer/JUDGING_DAY_SOP.md`
+Participant rules: `docs/submission_rules.md`. Method and cost: `docs/method.md`. Frozen public-200 score: `docs/opoyo_public200.json`.
 
 ## Data Source
 
