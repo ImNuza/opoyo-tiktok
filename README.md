@@ -138,6 +138,7 @@ docs/submission_rules.md          participant submission requirements
 starter/agent.py                  Opoyo agent (BM25 + Policy C + MiniLM)
 agent/                            slot parse, BM25, Policy C, MiniLM rerank
 evaluator/local_evaluator.py      public-set simulator and scorer
+tests/                            44 unit tests, stdlib unittest
 requirements.txt                  no hard deps; MiniLM optional / fail-closed
 .env.example                      scoring needs no key; DeepSeek unused
 NEXT-STEPS.md                     team runbook, 0.77 floor, measured fails
