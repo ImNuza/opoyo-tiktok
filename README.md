@@ -138,6 +138,8 @@ docs/submission_rules.md          participant submission requirements
 starter/agent.py                  Opoyo agent (BM25 + Policy C + MiniLM)
 evaluator/local_evaluator.py      public-set simulator and scorer
 requirements.txt                  no hard deps; MiniLM optional / fail-closed
+NEXT-STEPS.md                     team runbook, 0.77 floor, measured fails
+DATA_ATTRIBUTION.md               Amazon Reviews 2023 terms
 ```
 
 ## Judging and Submission Policy
