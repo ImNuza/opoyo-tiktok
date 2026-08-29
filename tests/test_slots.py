@@ -12,6 +12,14 @@ class SlotsTest(unittest.TestCase):
         self.assertEqual(slots.get("material"), "leather")
         self.assertEqual(slots.get("category"), "jacket")
 
+    def test_parses_plural_amazon_category_crumbs(self) -> None:
+        dresses = parse_slots("I'm looking for Dresses Casual. A key requirement is: fabric.")
+        self.assertEqual(dresses.get("category"), "dresses")
+        jackets = parse_slots("I'm looking for Lightweight Jackets Windbreakers.")
+        self.assertEqual(jackets.get("category"), "jackets")
+        wallets = parse_slots("I'm looking for Card Cases & Money Organizers Wallets.")
+        self.assertEqual(wallets.get("category"), "wallets")
+
     def test_parses_budget(self) -> None:
         slots = parse_slots("looking for boots under $50")
         self.assertEqual(slots.get("budget"), "50")
