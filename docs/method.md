@@ -17,6 +17,14 @@ No LLM API. Token usage reported as 0. Estimated cost $0. No API keys required t
 
 MiniLM is optional and local. First load may fetch from Hugging Face; scoring does not need network if the model is cached.
 
+## Reproducibility
+
+One command in this repo: `python3 -m evaluator.local_evaluator` (imports `starter.agent.Agent`).
+
+The frozen MiniLM public-200 (Hit Rate 0.77, MTTC 6.78) was measured on Python 3.11.15, torch 2.13.0, sentence-transformers 6.0.0. The stdlib path is Python 3.10+ with no packages; bare Python 3.14.2 scores Hit Rate 0.55.
+
+No non-obvious environment variables. Network is not required at scoring time if MiniLM is already cached.
+
 ## Limits
 
 - Official judging may disable network and may not have torch. The stdlib path still runs.
