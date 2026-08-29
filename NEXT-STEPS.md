@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-29
 
-`main` is BM25 + Policy C + fail-closed MiniLM rerank of 50. It is not the finished jam entry.
+`main` is BM25 + Policy C + fail-closed MiniLM rerank of 50. That is the scoring agent. Devpost story and the 3-minute video are still on the team.
 
 Public 200:
 
