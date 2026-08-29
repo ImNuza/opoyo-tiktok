@@ -121,6 +121,8 @@ Only exact `parent_asin` equality produces a hit. Core metrics are also reported
 
 Teams may use any legally accessible LLM API or local model. Teams manage their own credentials and must never commit API keys. Model choice, estimated cost, token usage, and latency must be disclosed. Token usage is a feasibility metric, not part of the core technical score. The organizer does not provide or reimburse model API credits; teams are responsible for any costs incurred through optional external services.
 
+This fork: no LLM API. Local MiniLM rerank, fail-closed. Reported token usage 0. Estimated cost $0. See `docs/method.md`.
+
 ## Files
 
 ```text
