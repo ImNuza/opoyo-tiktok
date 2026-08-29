@@ -137,6 +137,7 @@ docs/miss-log.md                  eight real public-200 misses
 docs/submission_rules.md          participant submission requirements
 starter/agent.py                  Opoyo agent (BM25 + Policy C + MiniLM)
 evaluator/local_evaluator.py      public-set simulator and scorer
+requirements.txt                  no hard deps; MiniLM optional / fail-closed
 ```
 
 ## Judging and Submission Policy
