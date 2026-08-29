@@ -137,6 +137,7 @@ docs/competition_specification.md participant rules and evaluation protocol
 docs/agent_api_contract.json      machine-readable Agent contract
 docs/evaluation_config.json       scoring configuration
 docs/baseline_results.json        reproducible weak-starter reference score
+docs/method.md                    method, MiniLM fail-closed, cost $0, limits
 starter/agent.py                  editable weak starter
 evaluator/local_evaluator.py      public-set simulator and scorer
 ```
