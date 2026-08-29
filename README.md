@@ -39,7 +39,7 @@ Official starter on the public set:
 - MRR: 0.068034
 - MTTC: 9.81
 
-Opoyo BM25+policy (public 200): Hit Rate@10 0.55 without MiniLM. With local MiniLM cross-encoder (fail-closed): Hit Rate@10 0.765, MRR 0.453639, MTTC 6.835, tech 0.601892.
+Opoyo BM25+policy (public 200): Hit Rate@10 0.55 without MiniLM. With local MiniLM cross-encoder (fail-closed): Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78, tech 0.606648.
 
 ## What You Receive
 
@@ -88,7 +88,7 @@ The command writes per-session results and aggregate metrics to `results.json`.
 The included weak BM25 starter scores Hit Rate@10 `0.125`, MRR `0.068034`, and
 MTTC `9.81` on the released public set. See `docs/baseline_results.json`.
 
-Public 200 for this fork: Hit Rate@10 0.55 without MiniLM. With local MiniLM: Hit Rate@10 0.765, MRR 0.453639, MTTC 6.835.
+Public 200 for this fork: Hit Rate@10 0.55 without MiniLM. With local MiniLM: Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78.
 
 ## Agent Interface
 

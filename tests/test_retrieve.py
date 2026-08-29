@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from agent.catalog import Catalog
-from agent.retrieve import Retriever, build_query
+from agent.retrieve import Retriever, build_query, _terms
 
 
 def write_catalog(rows: list[dict]) -> Path:
@@ -62,6 +62,15 @@ class RetrieveTest(unittest.TestCase):
         self.assertIn("fit", q)
         self.assertIn("comfort", q)
         self.assertIn("blue", q)
+
+    def test_template_junk_is_not_a_query_term(self) -> None:
+        terms = _terms("I'm looking for Dresses Casual. A key requirement is: fabric.")
+        self.assertIn("dresses", terms)
+        self.assertIn("casual", terms)
+        self.assertIn("fabric", terms)
+        self.assertNotIn("key", terms)
+        self.assertNotIn("requirement", terms)
+        self.assertNotIn("looking", terms)
 
     def test_required_terms_and_instead_of_or_blast(self) -> None:
         path = write_catalog([
