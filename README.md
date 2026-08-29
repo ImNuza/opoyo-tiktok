@@ -2,7 +2,7 @@
 
 ## Opoyo
 
-This repo is the SMU team fork for Track 4.
+This repo is the SMU team fork for Track 4. Source: https://github.com/ImNuza/opoyo-tiktok.git
 
 Copy `.env.example` to `.env`. Never commit `.env`.
 
