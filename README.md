@@ -134,6 +134,7 @@ docs/baseline_results.json        reproducible weak-starter reference score
 docs/opoyo_public200.json         frozen Opoyo public-200 score (MiniLM on)
 docs/method.md                    method, MiniLM fail-closed, cost $0, limits
 docs/miss-log.md                  eight real public-200 misses
+docs/policy-table.md              Policy C ask vs retrieve
 docs/submission_rules.md          participant submission requirements
 starter/agent.py                  Opoyo agent (BM25 + Policy C + MiniLM)
 evaluator/local_evaluator.py      public-set simulator and scorer
