@@ -156,6 +156,8 @@ LICENSE                           MIT
 
 Participant rules: `docs/submission_rules.md`. Method and cost: `docs/method.md`. Frozen public-200 score: `docs/opoyo_public200.json`.
 
+This repo keeps the kit layout. The entry file is `starter/agent.py`, which `evaluator.local_evaluator` imports. There is no `submission/` folder.
+
 ## Data Source
 
 The catalog and sessions are derived from Amazon Reviews 2023 by McAuley Lab, UCSD. See `DATA_ATTRIBUTION.md` before using or redistributing the data.
