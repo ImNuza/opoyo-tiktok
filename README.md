@@ -77,10 +77,9 @@ python3 -m evaluator.local_evaluator
 Entry point is `starter/agent.py` (`class Agent`). Helpers live in `agent/`. Do not edit the evaluator or public labels when reporting your local score.
 The command writes per-session results and aggregate metrics to `results.json`.
 
-The included weak BM25 starter scores Hit Rate@10 `0.125`, MRR `0.068034`, and
-MTTC `9.81` on the released public set. See `docs/baseline_results.json`.
+Official weak BM25 starter: Hit Rate@10 `0.125`, MRR `0.068034`, MTTC `9.81`. See `docs/baseline_results.json`.
 
-Public 200 for this fork: Hit Rate@10 0.55 without MiniLM. With local MiniLM: Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78.
+This fork, public 200: Hit Rate@10 0.55 without MiniLM. With local MiniLM: Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78.
 
 ## Agent Interface
 
