@@ -19,6 +19,10 @@ class SlotsTest(unittest.TestCase):
         self.assertEqual(jackets.get("category"), "jackets")
         wallets = parse_slots("I'm looking for Card Cases & Money Organizers Wallets.")
         self.assertEqual(wallets.get("category"), "wallets")
+        pants = parse_slots("I'm looking for Men Pants, but I'm still exploring.")
+        self.assertEqual(pants.get("category"), "pants")
+        robes = parse_slots("I'm looking for Sleep & Lounge Robes.")
+        self.assertEqual(robes.get("category"), "robes")
 
     def test_parses_budget(self) -> None:
         slots = parse_slots("looking for boots under $50")
