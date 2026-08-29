@@ -15,6 +15,8 @@ Track 4 shopping copilot. Public 200 (MiniLM on): Hit Rate@10 0.77, MRR 0.457494
 
 No LLM API. Token usage reported as 0. Estimated cost $0. No API keys required to score.
 
+Latency: public 200 on this Mac took 93s wall (about 0.46s per session) with MiniLM already cached. Local CPU only.
+
 MiniLM is optional and local. First load may fetch from Hugging Face; scoring does not need network if the model is cached.
 
 ## Reproducibility
