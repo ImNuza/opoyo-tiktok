@@ -1,0 +1,26 @@
+{
+  "audio": "/Users/dewa/Documents/Projects/TikTok Tech Jam/2026-08-28 16-06-35.m4a",
+  "json": "/Users/dewa/Documents/Projects/TikTok Tech Jam/2026-08-28 16-06-35.diarized.json",
+  "speakers": {
+    "0": {
+      "label": "Chen Xin / Chenxing",
+      "role": "TikTok engineer and track judge",
+      "confidence": "high",
+      "talk_time_s": 1543.8,
+      "word_count": 4271,
+      "evidence": "Self-introduces at 00:13 as Chen Xin (NUS, AI major, joined TikTok in June this year). Repeats at 00:39 as Chenxing, one of the judges for this track. Host addresses this speaker as Chenxing and Chen Sing."
+    },
+    "1": {
+      "label": "Host (unnamed)",
+      "role": "TikTok Impact Early Careers moderator",
+      "confidence": "medium-high",
+      "talk_time_s": 157.8,
+      "word_count": 826,
+      "evidence": "Runs Q and A, prizes, demo-video advice, Devpost, Telegram, and impact-early-careers@tiktok.com. Never states a personal name on this tape. Role is clear. Identity is not."
+    }
+  },
+  "notes": [
+    "STT also hears Transy once as an address for Speaker 0. Treated as a garble of Chenxing, not a third person.",
+    "Speaker 1 name mapping is medium-high for role only. Do not treat the host as a named person."
+  ]
+}
