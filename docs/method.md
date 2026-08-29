@@ -23,5 +23,7 @@ MiniLM is optional and local. First load may fetch from Hugging Face; scoring do
 - Override hits before the flip are ignored by the simulator. Erasing the old slot on `actually/ignore` did not raise override hit rate.
 - Crumbs with no product noun (`Running Trail Running`, `Novelty Women`) still miss.
 - Gold can match every AND token and still sit past BM25 rank 81.
+- Preference tags in the MiniLM query cut Hit Rate from 0.77 to 0.685. Tags stay in BM25 only.
+- Skipping MiniLM on empty slots hurt browsing. Widening the shortlist to 100 hurt MTTC.
 
 See `docs/miss-log.md` for eight real misses from this run.
