@@ -21,3 +21,13 @@ Do not invent sample sessions. Only log real misses from `results.json`.
 
 ## Entries
 
+From public 200 at Hit Rate 0.77 / MTTC 6.78 (`ed2eb11`, MiniLM on). 46 misses. Turn-1 BM25 rank is against search limit 81.
+
+public_0015 | browsing | Shoes Mules & Clogs (Crocs Classic Clog) | retrieval: category AND shoes, gold not in BM25 81
+public_0017 | buying | leather wallets (Travelambo RFID wallet) | retrieval: AND leather+wallets, gold not in BM25 81
+public_0019 | browsing | Outdoor & Work Rain (Asgard rain boots) | retrieval: no category noun parsed, gold not in BM25 81
+public_0020 | buying | Novelty Women / cotton (funny grandma T-shirt) | retrieval: no product noun in crumb, material-only AND
+public_0022 | buying | Dresses Casual / fabric (YESNO summer dress) | retrieval: AND dresses+fabric matches gold tokens but rank > 81
+public_0026 | buying | Running Trail Running / 100% Synthetic (ASICS Gel-Venture) | retrieval: BM25 rank 4 with empty slots, MiniLM knocks it out of Top 10
+public_0034 | intent_override | Shoes Loafers / leather | router: gold BM25 rank 1 on turn 1, override hits do not count until the later flip
+public_0074 | browsing | Athletic Walking (Skechers Go Walk) | retrieval: no category noun parsed, gold not in BM25 81
