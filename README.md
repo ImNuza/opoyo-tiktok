@@ -63,7 +63,7 @@ The session ends when the target product appears in the scored Top 10 or after t
 
 Catalog download, SHA256, and gunzip steps are at the top of this README. Do not commit `data/catalog.jsonl`.
 
-## Run the Starter
+## Run Opoyo
 
 Python 3.10 or later. The BM25+policy path uses the standard library only.
 
@@ -74,7 +74,7 @@ python3 -m unittest discover -s tests -q
 python3 -m evaluator.local_evaluator
 ```
 
-Edit `starter/agent.py` to implement your system. Do not edit the evaluator or public labels when reporting your local score.
+Entry point is `starter/agent.py` (`class Agent`). Helpers live in `agent/`. Do not edit the evaluator or public labels when reporting your local score.
 The command writes per-session results and aggregate metrics to `results.json`.
 
 The included weak BM25 starter scores Hit Rate@10 `0.125`, MRR `0.068034`, and
@@ -137,6 +137,7 @@ docs/miss-log.md                  eight real public-200 misses
 docs/policy-table.md              Policy C ask vs retrieve
 docs/submission_rules.md          participant submission requirements
 starter/agent.py                  Opoyo agent (BM25 + Policy C + MiniLM)
+agent/                            slot parse, BM25, Policy C, MiniLM rerank
 evaluator/local_evaluator.py      public-set simulator and scorer
 requirements.txt                  no hard deps; MiniLM optional / fail-closed
 .env.example                      scoring needs no key; DeepSeek unused
