@@ -74,6 +74,12 @@ python3 -m unittest discover -s tests -q
 python3 -m evaluator.local_evaluator
 ```
 
+No pip for the stdlib path. Optional MiniLM (Hit Rate 0.77 vs 0.55):
+
+```bash
+pip install "sentence-transformers>=3.0.0"
+```
+
 Entry point is `starter/agent.py` (`class Agent`). Helpers live in `agent/`. Do not edit the evaluator or public labels when reporting your local score.
 The command writes per-session results and aggregate metrics to `results.json`.
 
