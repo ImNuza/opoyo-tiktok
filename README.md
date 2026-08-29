@@ -73,9 +73,12 @@ Verify the downloaded file using the published `SHA256SUMS` file.
 
 ## Run the Starter
 
-Python 3.10 or later is recommended. The starter uses only the Python standard library.
+Python 3.10 or later. The BM25+policy path uses the standard library only.
+
+Optional MiniLM rerank (`cross-encoder/ms-marco-MiniLM-L-6-v2`) is fail-closed: if `sentence-transformers` / torch is missing, the agent keeps BM25 order. No API keys. Token usage is reported as 0. Estimated model cost is $0. Network is not required at scoring time if the model is already cached; a first MiniLM load may fetch from Hugging Face.
 
 ```bash
+python3 -m unittest discover -s tests -q
 python3 -m evaluator.local_evaluator
 ```
 
@@ -84,6 +87,8 @@ The command writes per-session results and aggregate metrics to `results.json`.
 
 The included weak BM25 starter scores Hit Rate@10 `0.125`, MRR `0.068034`, and
 MTTC `9.81` on the released public set. See `docs/baseline_results.json`.
+
+Public 200 for this fork: Hit Rate@10 0.55 without MiniLM. With local MiniLM: Hit Rate@10 0.765, MRR 0.453639, MTTC 6.835.
 
 ## Agent Interface
 
