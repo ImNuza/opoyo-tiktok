@@ -11,7 +11,7 @@ from agent.state import SessionState, apply_override, new_state
 
 
 class Agent:
-    """Policy C wrapper: slots + BM25 retrieve + fail-closed no-op rerank."""
+    """Policy C wrapper: slots + BM25 retrieve + fail-closed MiniLM rerank."""
 
     def __init__(self, catalog_path: str | Path = "data/catalog.jsonl") -> None:
         self.catalog = Catalog(catalog_path)
