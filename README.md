@@ -46,6 +46,7 @@ Opoyo BM25+policy (public 200): Hit Rate@10 0.55 without MiniLM. With local Mini
 - A frozen catalog of 50,000 products from the `Clothing_Shoes_and_Jewelry` category of Amazon Reviews 2023.
 - 200 labeled public sessions for local development.
 - A weak BM25 starter agent and deterministic local evaluator.
+- This fork: BM25 + Policy C + fail-closed MiniLM. Frozen public-200 score in `docs/opoyo_public200.json`.
 - The Agent API contract and scoring rules.
 
 The organizer keeps 800 additional sessions private for final evaluation.
