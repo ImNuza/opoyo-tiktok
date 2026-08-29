@@ -1,0 +1,13 @@
+{
+  "baseline": "opoyo_bm25_policy_minilm",
+  "dataset": "data/public_set.jsonl",
+  "sample_count": 200,
+  "hit_rate_at_10": 0.77,
+  "mrr": 0.457494,
+  "mttc": 6.78,
+  "efficiency": 0.422,
+  "technical_score": 0.606648,
+  "without_minilm_hit_rate_at_10": 0.55,
+  "commit": "cad6c1c",
+  "note": "Fail-closed MiniLM on BM25 shortlist of 50. Token usage 0."
+}
