@@ -60,16 +60,7 @@ For each session, your agent receives an anonymized preference profile and a sho
 
 The session ends when the target product appears in the scored Top 10 or after turn 10. Sessions cover Buying, Browsing, Intent Override, and Boundary behavior.
 
-## Download the Catalog
-
-Download `catalog.jsonl.gz` from the GitHub Release attached to this repository, then run:
-
-```bash
-gzip -dk catalog.jsonl.gz
-mv catalog.jsonl data/catalog.jsonl
-```
-
-Verify the downloaded file using the published `SHA256SUMS` file.
+Catalog download, SHA256, and gunzip steps are at the top of this README. Do not commit `data/catalog.jsonl`.
 
 ## Run the Starter
 
