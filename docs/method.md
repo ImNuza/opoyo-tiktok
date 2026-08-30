@@ -1,13 +1,13 @@
 # Opoyo method
 
-Track 4 shopping copilot. Frozen public 200 (MiniLM on): Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78, tech 0.606648. Dual-track held that floor. Re-run `python3 -m evaluator.local_evaluator` after the bidirectional hypernym AND and revert if Hit < 0.77 or MTTC > 6.83.
+Track 4 shopping copilot. Frozen public 200 (MiniLM on, pre dual-track): Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78, tech 0.606648. Without MiniLM: Hit Rate@10 0.55. Re-run `python3 -m evaluator.local_evaluator` after this commit and replace the freeze in `docs/opoyo_public200.json` if the floor holds.
 
 ## Method
 
 1. Dual-track router on official simulator templates: buying (`A key requirement is:`), browsing (`still exploring`), override (`Actually, ignore…` / `What I need is:`), boundary (no preference). Override wipes slots before parse.
 2. Parse slots from the shopper message (category including Amazon plurals, material, color, size, brand, budget).
 3. Fill the last-asked weak slot from `what matters is:` replies.
-4. BM25 over sqlite FTS5. Hard-slot tokens are AND. Closed bidirectional hypernym OR groups: any of shoe/clog/mule/boot → footwear; rain → raincoat/waterproof; wallet/billfold → wallet. If a query term hits a family, that family is AND even on browsing, so extras cannot OR-blast the catalog. Other non-family tokens are OR inside that AND. Evaluator template words (`key`, `requirement`, `exploring`) are stopwords.
+4. BM25 over sqlite FTS5. Hard-slot tokens are AND, with closed hypernym OR groups (`shoes` → clog/mule/sneaker/boot; `rain` → raincoat/waterproof; `wallet` → billfold). Other query tokens are OR. Browsing category crumbs are extra OR, not AND. Evaluator template words (`key`, `requirement`, `exploring`) are stopwords.
 5. Anonymized `preference_tags` are extra BM25 terms, not AND.
 6. Rank the BM25 shortlist of 50 with a local MiniLM cross-encoder (`ms-marco-MiniLM-L-6-v2`) on title+features+details. Query text strips simulator wrappers. Fail-closed: missing torch keeps BM25 order.
 7. Policy C: ask a missing *answerable* field when the pool is huge or slots are empty/weak; browsing-category-only still asks. Prefer the field that splits the current pool; else FIELD_ORDER starting at material. Never ask `category` or `brand`. Always return up to 10 catalog ASINs.
