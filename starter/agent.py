@@ -3,15 +3,40 @@ from __future__ import annotations
 from pathlib import Path
 
 from agent.catalog import Catalog
-from agent.policy import ASK, RETRIEVE, decide
+from agent.policy import ASK, decide
 from agent.rerank import rerank
 from agent.retrieve import Retriever, build_query
-from agent.slots import HARD_CONSTRAINTS, WEAK_FILL, parse_slots, preference_snippet
-from agent.state import SessionState, apply_override, new_state
+from agent.router import BROWSING, OVERRIDE, classify_track, looking_for_crumb
+from agent.slots import (
+    HARD_CONSTRAINTS,
+    WEAK_FILL,
+    parse_slots,
+    pool_attrs_from_products,
+    preference_snippet,
+)
+from agent.state import SessionState, apply_override, clear_intent, new_state
+
+
+def _product_text(product: dict) -> str:
+    title = str(product.get("title") or "")
+    features = product.get("features")
+    feat = (
+        " ".join(str(item) for item in features)
+        if isinstance(features, list)
+        else str(features or "")
+    )
+    details = product.get("details")
+    if isinstance(details, dict):
+        det = " ".join(f"{key} {item}" for key, item in details.items())
+    elif isinstance(details, list):
+        det = " ".join(str(item) for item in details)
+    else:
+        det = str(details or "")
+    return f"{title} {feat} {det}".strip()
 
 
 class Agent:
-    """Policy C wrapper: slots + BM25 retrieve + fail-closed MiniLM rerank."""
+    """Dual-track Policy C: slots + BM25 retrieve + fail-closed MiniLM rerank."""
 
     def __init__(self, catalog_path: str | Path = "data/catalog.jsonl") -> None:
         self.catalog = Catalog(catalog_path)
@@ -41,6 +66,9 @@ class Agent:
 
             state = self._sessions[session_id]
             state.turn = turn
+            track = classify_track(user_message)
+            if track == OVERRIDE:
+                clear_intent(state)
 
             parsed = parse_slots(user_message, profile=state.profile)
             if (
@@ -62,27 +90,44 @@ class Agent:
                 for tag in (state.profile.get("preference_tags") or [])
                 if tag
             ]
-            query = build_query(user_message, state.slots, extra=tags)
+            extra = list(tags)
+            crumb = looking_for_crumb(user_message)
+            if crumb:
+                extra.append(crumb)
+
+            required: list[str] = []
+            for key, value in state.slots.items():
+                if key not in HARD_CONSTRAINTS:
+                    continue
+                if track == BROWSING and key == "category":
+                    extra.append(value)
+                    continue
+                required.append(value)
+
+            query = build_query(user_message, state.slots, extra=extra)
             matched = self.retriever.search(
                 query,
                 limit=81,
-                required=[
-                    value
-                    for key, value in state.slots.items()
-                    if key in HARD_CONSTRAINTS
-                ],
+                required=required,
             )
             shortlist = matched[:50]
             texts: dict[str, str] = {}
+            pool_products: list[dict] = []
             for parent_asin in shortlist:
                 product = self.catalog.get(parent_asin) or {}
-                title = str(product.get("title") or "")
-                features = product.get("features")
-                feat = " ".join(str(item) for item in features) if isinstance(features, list) else str(features or "")
-                texts[parent_asin] = f"{title} {feat}".strip()
+                if product:
+                    pool_products.append(product)
+                texts[parent_asin] = _product_text(product)
             ranked = rerank(shortlist, user_message, state.slots, texts=texts)
+            pool_attrs = pool_attrs_from_products(pool_products)
 
-            action, attr = decide(state, turn, candidate_count=len(matched))
+            action, attr = decide(
+                state,
+                turn,
+                candidate_count=len(matched),
+                pool_attrs=pool_attrs,
+                track=track,
+            )
 
             ask_attribute: str | None = None
             if action == ASK and attr:
