@@ -94,7 +94,7 @@ class RetrieveTest(unittest.TestCase):
             },
         ])
         retriever = Retriever(Catalog(path))
-        or_ids = retriever.search("red running shoe", limit=10)
+        or_ids = retriever.search("red", limit=10)
         self.assertEqual(set(or_ids), {"HIT", "NOISE"})
         and_ids = retriever.search(
             "red running shoe",
@@ -154,11 +154,48 @@ class RetrieveTest(unittest.TestCase):
         ids = retriever.search("Outdoor Work Rain", limit=10)
         self.assertIn("RAIN", ids)
 
+    def test_clog_query_and_family_without_required(self) -> None:
+        path = write_catalog([
+            {
+                "parent_asin": "CLOG",
+                "title": "Crocs Classic Clog",
+                "categories": ["Mules & Clogs"],
+                "features": ["croslite"],
+                "details": {},
+                "store": "Crocs",
+                "description": "classic clog",
+            },
+            {
+                "parent_asin": "COAT",
+                "title": "Comfort wool coat",
+                "categories": ["Jackets"],
+                "features": ["wool", "comfort"],
+                "details": {},
+                "store": "Example",
+                "description": "warm coat",
+            },
+        ])
+        retriever = Retriever(Catalog(path))
+        ids = retriever.search("mules clogs comfort", limit=10)
+        self.assertIn("CLOG", ids)
+        self.assertNotIn("COAT", ids)
+
     def test_expand_terms_footwear(self) -> None:
         expanded = expand_terms(["shoes"])
         self.assertIn("clog", expanded)
         self.assertIn("mule", expanded)
         self.assertIn("sneaker", expanded)
+
+    def test_expand_terms_from_clog(self) -> None:
+        expanded = expand_terms(["clog"])
+        self.assertIn("shoes", expanded)
+        self.assertIn("mule", expanded)
+        self.assertIn("boot", expanded)
+
+    def test_expand_terms_from_billfold(self) -> None:
+        expanded = expand_terms(["billfold"])
+        self.assertIn("wallet", expanded)
+        self.assertIn("wallets", expanded)
 
 
 if __name__ == "__main__":

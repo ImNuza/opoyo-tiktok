@@ -21,13 +21,16 @@ _FOOTWEAR = (
 _RAIN = ("rain", "raincoat", "raincoats", "rainboot", "rainboots", "waterproof")
 _WALLET = ("wallet", "wallets", "billfold")
 
-HYPERNYMS: dict[str, tuple[str, ...]] = {
-    "shoe": _FOOTWEAR,
-    "shoes": _FOOTWEAR,
-    "rain": _RAIN,
-    "wallet": _WALLET,
-    "wallets": _WALLET,
-}
+
+def _index_families(*families: tuple[str, ...]) -> dict[str, tuple[str, ...]]:
+    out: dict[str, tuple[str, ...]] = {}
+    for family in families:
+        for term in family:
+            out[term] = family
+    return out
+
+
+HYPERNYMS: dict[str, tuple[str, ...]] = _index_families(_FOOTWEAR, _RAIN, _WALLET)
 
 
 def _text(value: object) -> str:
@@ -59,6 +62,21 @@ def expand_terms(terms: list[str]) -> list[str]:
             seen.add(variant)
             out.append(variant)
     return out
+
+
+def _families_mentioned(terms: list[str]) -> list[tuple[str, ...]]:
+    found: list[tuple[str, ...]] = []
+    seen: set[int] = set()
+    for term in terms:
+        family = HYPERNYMS.get(term)
+        if family is None:
+            continue
+        marker = id(family)
+        if marker in seen:
+            continue
+        seen.add(marker)
+        found.append(family)
+    return found
 
 
 def _quote_or(terms: list[str]) -> str:
@@ -161,24 +179,38 @@ class Retriever:
                     required_terms.append(token)
         required_terms = required_terms[:20]
         extra_terms = [term for term in query_terms if term not in required_terms][:20]
+        families = _families_mentioned([*required_terms, *query_terms])
 
-        if required_terms:
-            groups = [
-                _quote_or(list(HYPERNYMS.get(term, (term,))))
-                for term in required_terms
-            ]
-            and_part = " AND ".join(group for group in groups if group)
-            extra_expanded = expand_terms(extra_terms)[:40]
-            if extra_expanded:
-                expression = f"({and_part}) AND {_quote_or(extra_expanded)}"
+        and_groups: list[str] = []
+        used_required_family: set[int] = set()
+        for term in required_terms:
+            family = HYPERNYMS.get(term)
+            if family is not None:
+                marker = id(family)
+                if marker in used_required_family:
+                    continue
+                used_required_family.add(marker)
+                and_groups.append(_quote_or(list(family)))
             else:
-                expression = and_part
-            hits = self._match(expression, limit)
-            if hits:
-                return hits
-            hits = self._match(and_part, limit)
-            if hits:
-                return hits
+                and_groups.append(_quote_or([term]))
+        for family in families:
+            if id(family) in used_required_family:
+                continue
+            and_groups.append(_quote_or(list(family)))
+
+        extra_non_family = [term for term in extra_terms if term not in HYPERNYMS]
+        extra_clause = _quote_or(extra_non_family)
+
+        if and_groups:
+            and_part = " AND ".join(group for group in and_groups if group)
+            if and_part and extra_clause:
+                hits = self._match(f"({and_part}) AND {extra_clause}", limit)
+                if hits:
+                    return hits
+            if and_part:
+                hits = self._match(and_part, limit)
+                if hits:
+                    return hits
 
         expanded = expand_terms(query_terms)[:40]
         expression = " OR ".join(f'"{term}"' for term in expanded)
