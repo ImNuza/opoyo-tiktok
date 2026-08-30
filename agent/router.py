@@ -45,5 +45,5 @@ def looking_for_crumb(message: str) -> str | None:
     match = _LOOKING_RE.search(message)
     if not match:
         return None
-    crumb = re.sub(r"\s+", " ", match.group(1)).strip(" .,;:-)")
+    crumb = re.sub(r"\s+", " ", match.group(1)).strip(" .,;:-")
     return crumb or None

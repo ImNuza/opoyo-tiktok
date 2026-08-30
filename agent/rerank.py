@@ -1,11 +1,24 @@
 from __future__ import annotations
 
-import os
+import re
 from typing import Any
 
 _ENCODER: Any = None
 _ENCODER_FAILED = False
 _MODEL_ID = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+
+_NOISE_RES = (
+    re.compile(r"i['’]?m looking for\s+", re.I),
+    re.compile(r",?\s*but i['’]?m still exploring\.?", re.I),
+    re.compile(r"a key requirement is:\s*", re.I),
+    re.compile(r"those options are not quite right yet\.?", re.I),
+    re.compile(r"ask me about one specific attribute\.?", re.I),
+    re.compile(r"for that, what matters is:\s*", re.I),
+    re.compile(r"i don['’]?t have (an additional |a )?preference for \w+[.;,]?", re.I),
+    re.compile(r"please use your judgment\.?", re.I),
+    re.compile(r"actually,?\s+ignore my earlier preference\.?", re.I),
+    re.compile(r"what i need is:\s*", re.I),
+)
 
 
 def apply_order(shortlist: list[str], proposed: list[str]) -> list[str]:
@@ -13,11 +26,17 @@ def apply_order(shortlist: list[str], proposed: list[str]) -> list[str]:
     return [item for item in proposed if item in allowed]
 
 
-def _query_text(message: str, slots: dict[str, str]) -> str:
+def clean_query_text(message: str, slots: dict[str, str]) -> str:
+    text = message or ""
+    for pattern in _NOISE_RES:
+        text = pattern.sub(" ", text)
+    text = re.sub(r"\s+", " ", text).strip(" .;,-")
     parts = [value for value in slots.values() if value]
-    if message:
-        parts.append(message)
-    return " ".join(parts).strip() or message
+    if text:
+        key = text.lower()
+        if key not in {value.lower() for value in parts}:
+            parts.append(text)
+    return " ".join(parts).strip() or (message or "")
 
 
 def _local_rerank(
@@ -29,7 +48,7 @@ def _local_rerank(
     global _ENCODER, _ENCODER_FAILED
     if _ENCODER_FAILED or len(shortlist) < 2:
         return None
-    query = _query_text(message, slots)
+    query = clean_query_text(message, slots)
     if not query:
         return None
     pairs: list[tuple[str, str]] = []
@@ -47,7 +66,13 @@ def _local_rerank(
 
         _ENCODER = CrossEncoder(_MODEL_ID)
     scores = _ENCODER.predict(pairs)
-    ranked = [item for _, item in sorted(zip(scores, keep, strict=True), key=lambda row: (-float(row[0]), keep.index(row[1])))]
+    ranked = [
+        item
+        for _, item in sorted(
+            zip(scores, keep, strict=True),
+            key=lambda row: (-float(row[0]), keep.index(row[1])),
+        )
+    ]
     return ranked
 
 
@@ -58,16 +83,13 @@ def rerank(
     api_key: str | None = None,
     texts: dict[str, str] | None = None,
 ) -> list[str]:
-    """Return shortlist order. Local MiniLM is fail-closed. DeepSeek unused."""
+    """Return shortlist order. Local MiniLM is fail-closed."""
     try:
         if texts:
             local = _local_rerank(shortlist, message, slots, texts)
             if local:
                 return apply_order(shortlist, local)
-        key = api_key if api_key is not None else os.environ.get("DEEPSEEK_API_KEY")
-        if not key:
-            return shortlist
-        return apply_order(shortlist, shortlist)
+        return shortlist
     except Exception:
         global _ENCODER_FAILED
         _ENCODER_FAILED = True
