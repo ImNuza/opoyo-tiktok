@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from agent.catalog import Catalog
-from agent.retrieve import Retriever, build_query, _terms
+from agent.retrieve import Retriever, _terms, build_query, expand_terms
 
 
 def write_catalog(rows: list[dict]) -> Path:
@@ -102,6 +102,63 @@ class RetrieveTest(unittest.TestCase):
             required=["red", "shoe"],
         )
         self.assertEqual(and_ids, ["HIT"])
+
+    def test_shoes_hypernym_retrieves_clog(self) -> None:
+        path = write_catalog([
+            {
+                "parent_asin": "CLOG",
+                "title": "Crocs Classic Clog",
+                "categories": ["Mules & Clogs"],
+                "features": ["croslite"],
+                "details": {},
+                "store": "Crocs",
+                "description": "classic clog",
+            },
+            {
+                "parent_asin": "COAT",
+                "title": "Red winter coat",
+                "categories": ["Jackets"],
+                "features": ["wool"],
+                "details": {},
+                "store": "Example",
+                "description": "red coat",
+            },
+        ])
+        retriever = Retriever(Catalog(path))
+        ids = retriever.search("shoes", limit=10, required=["shoes"])
+        self.assertIn("CLOG", ids)
+        self.assertNotIn("COAT", ids)
+
+    def test_rain_expansion_retrieves_raincoat(self) -> None:
+        path = write_catalog([
+            {
+                "parent_asin": "RAIN",
+                "title": "Asgard waterproof raincoat",
+                "categories": ["Outdoor"],
+                "features": ["waterproof"],
+                "details": {},
+                "store": "Asgard",
+                "description": "rain coat",
+            },
+            {
+                "parent_asin": "HAT",
+                "title": "Wool beanie",
+                "categories": ["Hats"],
+                "features": ["wool"],
+                "details": {},
+                "store": "Example",
+                "description": "warm hat",
+            },
+        ])
+        retriever = Retriever(Catalog(path))
+        ids = retriever.search("Outdoor Work Rain", limit=10)
+        self.assertIn("RAIN", ids)
+
+    def test_expand_terms_footwear(self) -> None:
+        expanded = expand_terms(["shoes"])
+        self.assertIn("clog", expanded)
+        self.assertIn("mule", expanded)
+        self.assertIn("sneaker", expanded)
 
 
 if __name__ == "__main__":

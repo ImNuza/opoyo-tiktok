@@ -90,8 +90,23 @@ class AgentWrapperTest(unittest.TestCase):
         self.agent.respond("s1", "red leather jacket", turn=1, top_k=10)
         out = self.agent.respond("s1", "actually I want black boots", turn=4, top_k=10)
         self.assertEqual(self.agent._sessions["s1"].slots.get("color"), "black")
+        self.assertNotEqual(self.agent._sessions["s1"].slots.get("color"), "red")
         asins = [row["parent_asin"] for row in out["recommendations"]]
         self.assertTrue(set(asins) <= {"A", "B"})
+
+    def test_override_template_clears_old_slots(self) -> None:
+        self.agent.reset("s1", {})
+        self.agent.respond("s1", "I want red leather jacket", turn=1, top_k=10)
+        self.agent.respond(
+            "s1",
+            "Actually, ignore my earlier preference. What I need is: black boots.",
+            turn=3,
+            top_k=10,
+        )
+        slots = self.agent._sessions["s1"].slots
+        self.assertEqual(slots.get("color"), "black")
+        self.assertNotEqual(slots.get("color"), "red")
+        self.assertNotEqual(slots.get("material"), "leather")
 
     def test_respond_without_reset_does_not_raise(self) -> None:
         out = self.agent.respond("ghost", "blue shoe", turn=1, top_k=10)
@@ -124,7 +139,23 @@ class AgentWrapperTest(unittest.TestCase):
         agent = Agent(write_catalog(rows))
         agent.reset("s1", {})
         out = agent.respond("s1", "I want red", turn=1, top_k=10)
-        self.assertEqual(out["ask_attribute"], "category")
+        self.assertEqual(out["ask_attribute"], "material")
+        self.assertGreaterEqual(len(out["recommendations"]), 1)
+
+    def test_browsing_template_asks_not_category(self) -> None:
+        self.agent.reset("s1", {})
+        out = self.agent.respond(
+            "s1",
+            "I'm looking for Shoes Mules & Clogs, but I'm still exploring.",
+            turn=1,
+            top_k=10,
+        )
+        self.assertNotEqual(out["ask_attribute"], "category")
+        self.assertNotEqual(out["ask_attribute"], "brand")
+        self.assertIn(
+            out["ask_attribute"],
+            {"material", "color", "use_case", "feature", "style", "size", "budget"},
+        )
         self.assertGreaterEqual(len(out["recommendations"]), 1)
 
 

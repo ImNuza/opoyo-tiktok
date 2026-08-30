@@ -164,8 +164,8 @@ def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
 
 WEAK_FILL = frozenset({"style", "feature", "use_case", "other"})
 HARD_CONSTRAINTS = frozenset({"category", "brand", "budget", "size", "material", "color"})
-_MATTERS_RE = re.compile(r"what matters is:\s*(.+)", re.IGNORECASE)
-_NO_PREF_RE = re.compile(r"don'?t have (an additional )?preference", re.IGNORECASE)
+_MATTERS_RE = re.compile(r"what matters is:\s+(.+)", re.IGNORECASE)
+_NO_PREF_RE = re.compile(r"don'?t have (an additional |a )?preference", re.IGNORECASE)
 
 
 def preference_snippet(message: str) -> str | None:
@@ -180,3 +180,52 @@ def preference_snippet(message: str) -> str | None:
     if not tokens:
         return None
     return " ".join(tokens)
+
+
+def _blob(product: dict) -> str:
+    parts: list[str] = []
+    for field in ("title", "features", "details", "description", "categories"):
+        value = product.get(field)
+        if isinstance(value, dict):
+            parts.extend(f"{key} {item}" for key, item in value.items())
+        elif isinstance(value, list):
+            parts.extend(str(item) for item in value)
+        elif value not in (None, ""):
+            parts.append(str(value))
+    return " ".join(parts)
+
+
+def visible_attrs(product: dict) -> dict[str, str]:
+    out: dict[str, str] = {}
+    blob = _blob(product)
+    color = _COLOR_RE.search(blob)
+    if color:
+        out["color"] = color.group(1).lower()
+    material = _MATERIAL_RE.search(blob)
+    if material:
+        out["material"] = material.group(1).lower()
+    store = product.get("store")
+    if store:
+        out["brand"] = str(store)
+    price = product.get("price")
+    if price not in (None, ""):
+        try:
+            amount = float(price)
+        except (TypeError, ValueError):
+            amount = None
+        if amount is not None:
+            if amount < 25:
+                out["budget"] = "low"
+            elif amount < 75:
+                out["budget"] = "mid"
+            else:
+                out["budget"] = "high"
+    return out
+
+
+def pool_attrs_from_products(products: list[dict]) -> dict[str, set[str]]:
+    pooled: dict[str, set[str]] = {}
+    for product in products:
+        for key, value in visible_attrs(product).items():
+            pooled.setdefault(key, set()).add(value)
+    return pooled
