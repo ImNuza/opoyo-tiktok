@@ -60,9 +60,6 @@ class SlotsTest(unittest.TestCase):
         self.assertIsNone(
             preference_snippet("I don't have an additional preference for style.")
         )
-        self.assertIsNone(
-            preference_snippet("I don't have a preference for color; please use your judgment.")
-        )
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from agent.state import apply_override, clear_intent, new_state
+from agent.state import apply_override, new_state
 
 
 class StateTest(unittest.TestCase):
@@ -19,17 +19,6 @@ class StateTest(unittest.TestCase):
         apply_override(state, "color", "blue")
         self.assertEqual(state.slots["color"], "blue")
         self.assertNotIn("color", state.asked)
-
-    def test_clear_intent_wipes_slots_and_asked(self) -> None:
-        state = new_state("s1", {})
-        state.slots["color"] = "red"
-        state.slots["style"] = "running"
-        state.asked.add("color")
-        state.last_asked = "color"
-        clear_intent(state)
-        self.assertEqual(state.slots, {})
-        self.assertEqual(state.asked, set())
-        self.assertIsNone(state.last_asked)
 
 
 if __name__ == "__main__":

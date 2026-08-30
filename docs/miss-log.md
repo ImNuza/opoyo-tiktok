@@ -31,3 +31,7 @@ public_0022 | buying | Dresses Casual / fabric (YESNO summer dress) | retrieval:
 public_0026 | buying | Running Trail Running / 100% Synthetic (ASICS Gel-Venture) | retrieval: BM25 rank 4 with empty slots, MiniLM knocks it out of Top 10
 public_0034 | intent_override | Shoes Loafers / leather | router: gold BM25 rank 1 on turn 1, override hits do not count until the later flip
 public_0074 | browsing | Athletic Walking (Skechers Go Walk) | retrieval: no category noun parsed, gold not in BM25 81
+
+## After freeze (2026-08-30)
+
+Dual-track + hypernym expansion (`76ef77f`) printed Hit 0.69. Bidirectional hypernym AND (`0f31b23`) also printed Hit 0.69; of the eight freeze misses above, only `public_0015` flipped. Scoring files restored to `cad6c1c`. See `docs/method.md`.

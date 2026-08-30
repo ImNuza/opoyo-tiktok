@@ -2,15 +2,13 @@
 
 Last updated: 2026-08-30
 
-`main` is dual-track Policy C + BM25 hypernym expansion + fail-closed MiniLM rerank of 50. That is the scoring agent.
+`main` scoring files are the `cad6c1c` freeze: BM25 + Policy C + fail-closed MiniLM rerank of 50.
 
-Public 200 freeze (pre dual-track, MiniLM on):
+Public 200 freeze (MiniLM on, `cad6c1c`):
 
 - Official starter: Hit Rate@10 0.125, MRR 0.068034, MTTC 9.81
 - Opoyo without MiniLM: Hit Rate@10 0.55
 - Opoyo with MiniLM: Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78, tech 0.606648
-
-Re-run the evaluator after pulling this commit. Revert if Hit < 0.77 or MTTC > 6.83.
 
 Deadline: Tue 1 Sep 2026, 12pm Devpost. 72 hours started Sat 29 Aug, 12pm.
 
@@ -18,13 +16,9 @@ Deadline: Tue 1 Sep 2026, 12pm Devpost. 72 hours started Sat 29 Aug, 12pm.
 
 - Official kit vendored (evaluator, 200 sessions, Agent contract).
 - Agent in `starter/agent.py`, logic in `agent/`.
-- Dual-track router on official templates (`agent/router.py`).
-- Simulator-answerable FIELD_ORDER (no category/brand asks). Pool-entropy ask when the shortlist splits.
-- Hypernym OR groups for shoes/rain/wallet. Browsing crumbs are OR, not AND.
-- MiniLM query strips simulator wrappers; rerank body is title+features+details.
 - Plural Amazon category crumbs, preference tags as extra BM25 terms (not AND), template stopwords.
 - MiniLM `cross-encoder/ms-marco-MiniLM-L-6-v2` on the shortlist of 50. Fail-closed if torch is missing.
-- 60 unit tests. Catalog at `data/catalog.jsonl` (50k), gitignored.
+- Catalog at `data/catalog.jsonl` (50k), gitignored.
 - `docs/method.md` and `docs/miss-log.md` are filled.
 - `requirements.txt` documents the stdlib path. No hard pip deps.
 
@@ -39,18 +33,19 @@ Do not commit `.env`, `data/catalog.jsonl`, or `results.json`.
 - Do not put preference tags into the MiniLM query (Hit 0.77 to 0.685).
 - Do not inject BM25 ranks 1-4 into MiniLM top 10 (Hit 0.745).
 - Do not stuff the looking-for crumb into category AND.
+- Do not ship dual-track router + answerable FIELD_ORDER + hypernym BM25 expansion. Public-200 MiniLM on `76ef77f` (that stack, AND already reverted): Hit 0.69, MRR 0.437931, MTTC 6.135, tech 0.573679. Floor Hit 0.77 / MTTC 6.83.
+- Do not AND bidirectional hypernym families on browsing (`0f31b23`). Public-200 MiniLM: Hit 0.69, MRR 0.433944, MTTC 6.13, tech 0.572583. Hit-neutral vs dual-track without AND. Of the eight freeze misses, only `public_0015` flipped. Reverted as `76ef77f`.
 
 ## Remaining (in order)
 
-1. Run public 200. Keep or revert this commit on the floor rule.
-2. Dense title-union only if this commit holds the floor.
-3. Devpost story, 3-minute video, who-did-what. No UI score.
+1. Dense title-union only on this restored freeze (Hit 0.77 / MTTC 6.78 reprinted). Do not start it on a 0.69 tree.
+2. Devpost story, 3-minute video, who-did-what. No UI score.
 
 ## How we know we are winning
 
 Only exact `parent_asin` hits count. Turn 11 is a miss.
 
-| Signal | Frozen (pre dual-track) |
+| Signal | Frozen (`cad6c1c`) |
 |---|---|
 | Hit Rate well above 0.125 | 0.77 |
 | MRR up | 0.457 |

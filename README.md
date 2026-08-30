@@ -46,7 +46,7 @@ Opoyo BM25+policy (public 200): Hit Rate@10 0.55 without MiniLM. With local Mini
 - A frozen catalog of 50,000 products from the `Clothing_Shoes_and_Jewelry` category of Amazon Reviews 2023.
 - 200 labeled public sessions for local development.
 - A deterministic local evaluator. Official weak BM25 starter scored Hit Rate@10 0.125.
-- This fork: BM25 + dual-track Policy C + fail-closed MiniLM. Frozen public-200 score in `docs/opoyo_public200.json`.
+- This fork: BM25 + Policy C + fail-closed MiniLM. Frozen public-200 score in `docs/opoyo_public200.json`.
 - The Agent API contract and scoring rules.
 
 The organizer keeps 800 additional sessions private for final evaluation.
@@ -141,10 +141,10 @@ docs/method.md                    method, MiniLM fail-closed, cost $0, limits
 docs/miss-log.md                  eight real public-200 misses
 docs/policy-table.md              Policy C ask vs retrieve
 docs/submission_rules.md          participant submission requirements
-starter/agent.py                  Opoyo agent (dual-track + BM25 + Policy C + MiniLM)
-agent/                            router, slot parse, BM25, Policy C, MiniLM rerank
+starter/agent.py                  Opoyo agent (BM25 + Policy C + MiniLM)
+agent/                            slot parse, BM25, Policy C, MiniLM rerank
 evaluator/local_evaluator.py      public-set simulator and scorer
-tests/                            60 unit tests, stdlib unittest
+tests/                            44 unit tests, stdlib unittest
 requirements.txt                  no hard deps; MiniLM optional / fail-closed
 .env.example                      scoring needs no key; DeepSeek unused
 NEXT-STEPS.md                     team runbook, 0.77 floor, measured fails

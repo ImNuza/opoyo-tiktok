@@ -37,9 +37,3 @@ def apply_override(state: SessionState, attribute: str, value: str) -> None:
         return
     state.slots[attribute] = value
     state.asked.discard(attribute)
-
-
-def clear_intent(state: SessionState) -> None:
-    state.slots.clear()
-    state.asked.clear()
-    state.last_asked = None

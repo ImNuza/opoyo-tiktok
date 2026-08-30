@@ -23,7 +23,7 @@ Eval: `/Users/dewa/.hermes/hermes-agent/venv/bin/python3.11 -m evaluator.local_e
 Unittest: `/Users/dewa/.hermes/hermes-agent/venv/bin/python3.11 -m unittest discover -s tests -q`
 Floor: Hit@10 0.77, MRR 0.457494, MTTC 6.78, tech 0.606648. Revert scoring files if Hit < 0.77 or MTTC > 6.83.
 
-Do-not-retry: MiniLM fusion of BM25 ranks 1–4; drop AND on shoes/women/clothing; crumb into category AND; clothing wordlists from public misses; AND budget; BM25 limit 200 as MiniLM shortlist 100; skip MiniLM on empty slots; preference tags in MiniLM query; running/walking as `use_case`.
+Do-not-retry: MiniLM fusion of BM25 ranks 1–4; drop AND on shoes/women/clothing; crumb into category AND; clothing wordlists from public misses; AND budget; BM25 limit 200 as MiniLM shortlist 100; skip MiniLM on empty slots; preference tags in MiniLM query; running/walking as `use_case`; dual-track router + hypernym expansion; bidirectional hypernym AND on browsing.
 
 Only if first holds: (2) soft price rank as a score, never AND; (3) override string `Actually, ignore my earlier preference`. Stay on `overnight`. Do not commit to `main`.
 
@@ -34,6 +34,8 @@ Only if first holds: (2) soft price rank as a score, never AND; (3) override str
 - 2026-08-30 soft price demote of MiniLM 50 (catalog price more than 2x off budget). Public-200 MiniLM identical to floor. No-op. Reverted `agent/rerank.py`, `starter/agent.py`, `tests/test_rerank.py`. Do not retry price-band rerank without evidence budget is in slots on miss turns.
 - 2026-08-30 MiniLM query strip of retrieve stopwords (`_query_text` via `_terms`). Public-200 MiniLM: Hit 0.735, MRR 0.443016, MTTC 7.045, tech 0.579505. Floor Hit 0.77 / MTTC 6.83. Reverted `agent/rerank.py`, `tests/test_rerank.py`. Do not retry stripping simulator template out of the cross-encoder query.
 - 2026-08-30 override suffix → `feature` fill (`Actually, ignore... What I need is:`). Public-200 MiniLM: Hit 0.76, MRR 0.447619, MTTC 6.8, tech 0.598286. intent_override Hit 0.733 → 0.667. Reverted `agent/slots.py`, `starter/agent.py`, `tests/test_slots.py`. Do not retry override feature-fill or erase (erase already had no lift).
+- 2026-08-30 dual-track router + answerable FIELD_ORDER + hypernym BM25 expansion (`abc26c2` through `4e64b82`). Public-200 MiniLM on `76ef77f`: Hit 0.69, MRR 0.437931, MTTC 6.135, tech 0.573679. Floor Hit 0.77 / MTTC 6.83. Restored `agent/`, `starter/`, `tests/` to `cad6c1c`. Do not retry dual-track or hypernym expansion as a floor-hold.
+- 2026-08-30 bidirectional hypernym AND even on browsing (`0f31b23`). Public-200 MiniLM: Hit 0.69, MRR 0.433944, MTTC 6.13, tech 0.572583. Hit-neutral vs dual-track without AND. Of eight freeze misses, only `public_0015` flipped. Reverted as `76ef77f`. Do not retry bidirectional hypernym AND.
 - Probed, do not eval (leave_hits or no-op on miss enter81): FTS porter; naive stem_or; last-crumb repeat (deduped MATCH no-op); AND-only required (leave 52 hits); drop CSJ hypernym extras; bm25 title/cat weight sweeps; Policy D empty/weak and count<=80 (0 turn-1 sessions); hypernym extra pad.
 
 Scoring tree is the floor commit plus this fail log. Two consecutive floor drops this wakeup (MiniLM query strip, then override feature-fill). No unused named hypothesis that is not in this log.

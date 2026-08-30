@@ -13,22 +13,6 @@ STOPWORDS = {
     "key", "requirement", "still", "exploring", "additional", "matters",
 }
 
-_FOOTWEAR = (
-    "shoe", "shoes", "sneaker", "sneakers", "boot", "boots",
-    "clog", "clogs", "mule", "mules", "loafer", "loafers",
-    "sandal", "sandals", "heel", "heels",
-)
-_RAIN = ("rain", "raincoat", "raincoats", "rainboot", "rainboots", "waterproof")
-_WALLET = ("wallet", "wallets", "billfold")
-
-HYPERNYMS: dict[str, tuple[str, ...]] = {
-    "shoe": _FOOTWEAR,
-    "shoes": _FOOTWEAR,
-    "rain": _RAIN,
-    "wallet": _WALLET,
-    "wallets": _WALLET,
-}
-
 
 def _text(value: object) -> str:
     if value is None:
@@ -46,28 +30,6 @@ def _terms(text: str) -> list[str]:
         for token in TOKEN_RE.findall(text)
         if len(token) > 1 and token.lower() not in STOPWORDS
     ]
-
-
-def expand_terms(terms: list[str]) -> list[str]:
-    out: list[str] = []
-    seen: set[str] = set()
-    for term in terms:
-        variants = HYPERNYMS.get(term, (term,))
-        for variant in variants:
-            if variant in seen:
-                continue
-            seen.add(variant)
-            out.append(variant)
-    return out
-
-
-def _quote_or(terms: list[str]) -> str:
-    if not terms:
-        return ""
-    if len(terms) == 1:
-        return f'"{terms[0]}"'
-    inner = " OR ".join(f'"{term}"' for term in terms)
-    return f"({inner})"
 
 
 def build_query(message: str, slots: dict[str, str], extra: list[str] | None = None) -> str:
@@ -163,14 +125,10 @@ class Retriever:
         extra_terms = [term for term in query_terms if term not in required_terms][:20]
 
         if required_terms:
-            groups = [
-                _quote_or(list(HYPERNYMS.get(term, (term,))))
-                for term in required_terms
-            ]
-            and_part = " AND ".join(group for group in groups if group)
-            extra_expanded = expand_terms(extra_terms)[:40]
-            if extra_expanded:
-                expression = f"({and_part}) AND {_quote_or(extra_expanded)}"
+            and_part = " AND ".join(f'"{term}"' for term in required_terms)
+            if extra_terms:
+                or_part = " OR ".join(f'"{term}"' for term in extra_terms)
+                expression = f"({and_part}) AND ({or_part})"
             else:
                 expression = and_part
             hits = self._match(expression, limit)
@@ -180,6 +138,5 @@ class Retriever:
             if hits:
                 return hits
 
-        expanded = expand_terms(query_terms)[:40]
-        expression = " OR ".join(f'"{term}"' for term in expanded)
+        expression = " OR ".join(f'"{term}"' for term in query_terms)
         return self._match(expression, limit)
