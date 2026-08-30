@@ -35,6 +35,7 @@ Interpreter for both runs: `/Users/dewa/.hermes/hermes-agent/venv/bin/python3.11
 
 - Dual-track router + answerable FIELD_ORDER + hypernym BM25 expansion (`abc26c2` through `4e64b82`, scored on `76ef77f` after AND revert). Hit 0.69, MRR 0.437931, MTTC 6.135, tech 0.573679. Scenario: boundary 0.7 / 5.5, browsing 0.75 / 5.5125, buying 0.7125 / 5.7875, intent_override 0.466667 / 8.933333. Floor Hit 0.77 / MTTC 6.83. Restored `agent/`, `starter/`, `tests/` to `cad6c1c` and removed `agent/router.py`.
 - Bidirectional hypernym AND even on browsing (`0f31b23`). Hit 0.69, MRR 0.433944, MTTC 6.13, tech 0.572583. Same Hit as dual-track without AND (AND +1 browsing, -1 buying). Of eight freeze misses (`public_0015`, `0017`, `0019`, `0020`, `0022`, `0026`, `0034`, `0074`), only `public_0015` flipped. Reverted as `76ef77f`.
+- Dense title-union (BM25 81 ∪ title cosine 81, MiniLM on the union). Probe `miss_enter=3` (`public_0097` / `0124` / `0188`), `leave_hits=0`. Public-200 MiniLM: Hit 0.73, MRR 0.457063, MTTC 7.265, tech 0.576819. Reverted on scratch. Do not retry title-union, MiniLM-on-full-union, or RRF of the same first-stage.
 
 ## Limits
 

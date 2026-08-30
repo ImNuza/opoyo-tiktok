@@ -34,4 +34,4 @@ public_0074 | browsing | Athletic Walking (Skechers Go Walk) | retrieval: no cat
 
 ## After freeze (2026-08-30)
 
-Dual-track + hypernym expansion (`76ef77f`) printed Hit 0.69. Bidirectional hypernym AND (`0f31b23`) also printed Hit 0.69; of the eight freeze misses above, only `public_0015` flipped. Scoring files restored to `cad6c1c`. See `docs/method.md`.
+Dual-track + hypernym expansion (`76ef77f`) printed Hit 0.69. Bidirectional hypernym AND (`0f31b23`) also printed Hit 0.69; of the eight freeze misses above, only `public_0015` flipped. Dense title-union printed Hit 0.73 / MTTC 7.265 on scratch and was reverted. Scoring files on `main` stay at `cad6c1c` (`b50a95b`). See `docs/scoring-findings-2026-08-30.md`.
