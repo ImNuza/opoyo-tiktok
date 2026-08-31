@@ -39,7 +39,7 @@ Official starter on the public set:
 - MRR: 0.068034
 - MTTC: 9.81
 
-Opoyo BM25+policy (public 200): Hit Rate@10 0.55 without MiniLM. With local MiniLM cross-encoder (fail-closed): Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78, tech 0.606648.
+Opoyo BM25+policy (public 200): Hit Rate@10 0.715 without MiniLM. With local MiniLM cross-encoder (fail-closed): Hit Rate@10 0.79, MRR 0.407956, MTTC 6.265, tech 0.612087.
 
 ## What You Receive
 
@@ -74,7 +74,7 @@ python3 -m unittest discover -s tests -q
 python3 -m evaluator.local_evaluator
 ```
 
-No pip for the stdlib path. Optional MiniLM (Hit Rate 0.77 vs 0.55):
+No pip for the stdlib path. Optional MiniLM (Hit Rate 0.79 vs 0.715 on the current parser):
 
 ```bash
 pip install "sentence-transformers>=3.0.0"
@@ -85,7 +85,7 @@ The command writes per-session results and aggregate metrics to `results.json`.
 
 Official weak BM25 starter: Hit Rate@10 `0.125`, MRR `0.068034`, MTTC `9.81`. See `docs/baseline_results.json`.
 
-This fork, public 200: Hit Rate@10 0.55 without MiniLM. With local MiniLM: Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78.
+This fork, public 200: Hit Rate@10 0.715 without MiniLM. With local MiniLM: Hit Rate@10 0.79, MRR 0.407956, MTTC 6.265. See `docs/opoyo_public200.json`.
 
 ## Agent Interface
 
@@ -136,8 +136,8 @@ docs/competition_specification.md participant rules and evaluation protocol
 docs/agent_api_contract.json      machine-readable Agent contract
 docs/evaluation_config.json       scoring configuration
 docs/baseline_results.json        reproducible weak-starter reference score
-docs/opoyo_public200.json         frozen Opoyo public-200 score (MiniLM on)
-docs/opoyo_public200_lexical.json MiniLM-off public-200 after lexical pass (Hit 0.695)
+docs/opoyo_public200.json         frozen Opoyo public-200 score (MiniLM on, Hit 0.79)
+docs/opoyo_public200_lexical.json MiniLM-off public-200 after lexical pass (Hit 0.715)
 docs/lexical-pass.md              crumb parse / hypernym AND; reverted dead ends
 docs/method.md                    method, MiniLM fail-closed, cost $0, limits
 docs/miss-log.md                  eight real public-200 misses

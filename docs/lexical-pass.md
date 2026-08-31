@@ -1,6 +1,6 @@
 # Lexical pass (this session)
 
-Public-200, **MiniLM off**, BM25 limit **81**, shortlist 50. Frozen numbers: `docs/opoyo_public200_lexical.json`.
+Public-200, BM25 limit **81**, shortlist 50. MiniLM-off numbers: `docs/opoyo_public200_lexical.json`. MiniLM-on numbers: `docs/opoyo_public200.json`.
 
 Reproduce:
 
@@ -17,10 +17,14 @@ $env:OPOYO_NO_MINILM = "1"
 |--|--------|-----|------|------|
 | MiniLM-off before this pass | 0.645 | 0.407 | 7.53 | 0.514 |
 | After crumb / hypernym / no budget AND | 0.695 | 0.404 | 6.96 | 0.550 |
-| **+ last noun in crumb (current)** | **0.715** | 0.406 | **6.87** | **0.562** |
-| Historical MiniLM-on floor (`docs/opoyo_public200.json`) | 0.77 | 0.457 | 6.78 | 0.607 |
+| **+ last noun in crumb (MiniLM off)** | **0.715** | 0.406 | **6.87** | **0.562** |
+| **Same parse + MiniLM on (current)** | **0.790** | 0.408 | **6.27** | **0.612** |
+| Previous MiniLM freeze, old parser (`cad6c1c`) | 0.77 | 0.457 | 6.78 | 0.607 |
 
-Scenario Hit@10 now: browsing 0.763, buying 0.713, boundary 0.90, intent_override 0.533 (unchanged).
+Scenario Hit@10 MiniLM off: browsing 0.763, buying 0.713, boundary 0.90, intent_override 0.533.  
+Scenario Hit@10 MiniLM on: browsing 0.80, buying 0.813, boundary 0.80, intent_override 0.70.
+
+MiniLM vs last lexical run: **+15 hits** (57 → 42 misses). Turn-1 hits stayed ~28–29 (first-stage recall unchanged). Rank-1 fell 63 → 58; extra hits are mid/late promotions into Top 10, so MRR is almost flat. Override is the largest relative MiniLM lift (+0.17 Hit). Buying +0.10 Hit. Boundary 0.90 → 0.80 (n=10). Details: `docs/opoyo_public200.json`.
 
 ## What landed (keep)
 
@@ -46,7 +50,7 @@ Material AND is **unchanged** (dropping it previously cut MiniLM-on Hit to 0.745
 | Skip AND on generic materials (`cotton`/`polyester`/`fabric`/…) | Hit **0.710** (below 0.715). Reverted. Material AND is still load-bearing on MiniLM-off. |
 | Skip `leather` AND when category is wallet/handbag | Hit **identical** 0.715. Reverted as dead code. |
 
-Do not retry those without a reranker that can promote ranks 11–200 into Top 10.
+MiniLM on the 50-shortlist **does** promote in-list gold (Hit 0.715 → 0.79). It does not recover gold past BM25 81. Do not retry BM25 200 / shortlist 100 without a new measurement; the old MiniLM-on widen still hurt MTTC.
 
 ## Code
 
@@ -58,7 +62,7 @@ Do not retry those without a reranker that can promote ranks 11–200 into Top 1
 
 ## Still open
 
-- Intent override Hit 0.533; pre-flip hits do not count
-- Gold can still sit past BM25 rank 81 on a given query
-- Buying MRR (0.318) is the weak rank problem, not miss-only
-- MiniLM-on 0.77 was measured on another machine/venv with torch; not re-run here
+- 42 MiniLM-on misses: gold still not in BM25 81, or MiniLM left it at rank 11+
+- Intent override MiniLM-on Hit 0.70; pre-flip hits still do not count
+- Buying MiniLM-on MRR 0.373 — more hits, still weak ranks (MiniLM parks some gold at 5–10)
+- Rank-1 count dropped slightly with MiniLM (63 → 58)

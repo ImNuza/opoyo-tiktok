@@ -223,7 +223,7 @@ def evaluate(
     sessions: list[dict] = []
     total_prompt_tokens = 0
     total_completion_tokens = 0
-    for sample in samples:
+    for index, sample in enumerate(samples, start=1):
         session_id = f"public_{uuid.uuid4().hex}"
         agent.reset(session_id, sample["user_profile"])
         target = str(sample["ground_truth"]["parent_asin"])
@@ -274,6 +274,9 @@ def evaluate(
             "best_rank": best_rank,
             "reciprocal_rank": 0.0 if best_rank is None else 1.0 / best_rank,
         })
+        if index == 1 or index % 10 == 0 or index == len(samples):
+            hits = sum(int(item["hit"]) for item in sessions)
+            print(f"  {index}/{len(samples)} {sample['sample_id']} hit_so_far={hits}/{index}", flush=True)
 
     overall = metric_summary(sessions)
     efficiency = max(0.0, min(1.0, (11.0 - float(overall["mttc"])) / 10.0))
@@ -302,7 +305,9 @@ def main() -> None:
     parser.add_argument("--output", default="results.json")
     args = parser.parse_args()
     samples = load_jsonl(args.dataset)
+    print(f"Indexing catalog {args.catalog}...", flush=True)
     catalog_ids, categories, products = catalog_index(args.catalog)
+    print(f"Evaluating {len(samples)} sessions...", flush=True)
     result = evaluate(Agent(args.catalog), samples, catalog_ids, categories, products)
     Path(args.output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({key: value for key, value in result.items() if key != "sessions"}, indent=2))

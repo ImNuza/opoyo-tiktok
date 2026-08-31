@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import os
+import sys
 from typing import Any
+
+# HuggingFace tokenizers + PyTorch on Windows can deadlock if this stays on.
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 _ENCODER: Any = None
 _ENCODER_FAILED = False
@@ -45,8 +49,12 @@ def _local_rerank(
     if _ENCODER is None:
         from sentence_transformers import CrossEncoder
 
-        _ENCODER = CrossEncoder(_MODEL_ID)
-    scores = _ENCODER.predict(pairs)
+        print(f"Loading MiniLM {_MODEL_ID} on cpu (first predict can take 1-2 min)...", file=sys.stderr, flush=True)
+        _ENCODER = CrossEncoder(_MODEL_ID, device="cpu")
+        # Warmup so the first real shortlist is not a silent compile stall.
+        _ENCODER.predict([("warmup query", "warmup document")], batch_size=1, show_progress_bar=False)
+        print("MiniLM ready.", file=sys.stderr, flush=True)
+    scores = _ENCODER.predict(pairs, batch_size=16, show_progress_bar=False, device="cpu")
     ranked = [item for _, item in sorted(zip(scores, keep, strict=True), key=lambda row: (-float(row[0]), keep.index(row[1])))]
     return ranked
 
