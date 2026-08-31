@@ -1,10 +1,10 @@
 # Opoyo method
 
-Track 4 shopping copilot. Public 200 after the lexical parse + MiniLM: Hit Rate@10 0.79, MRR 0.407956, MTTC 6.265, tech 0.612087 (`docs/opoyo_public200.json`; 158/200 hits). Same parse MiniLM off: Hit Rate@10 0.715, MRR 0.406214, MTTC 6.865, tech 0.562064 (`docs/opoyo_public200_lexical.json`). Previous MiniLM freeze on the old parser (`cad6c1c`): Hit 0.77, MRR 0.457494, MTTC 6.78, tech 0.606648. Older stdlib MiniLM-off note: Hit Rate@10 0.55.
+Track 4 shopping copilot. Public 200 MiniLM off + catalog category lexicon: Hit Rate@10 0.81, MRR 0.422776, MTTC 6.28, tech 0.626233 (`docs/opoyo_public200_lexical.json`; 162/200 hits). MiniLM on the previous (regex-only) parse: Hit Rate@10 0.79 (`docs/opoyo_public200.json`). Previous MiniLM freeze on the old parser (`cad6c1c`): Hit 0.77. Older stdlib MiniLM-off note: Hit Rate@10 0.55. Re-run MiniLM on the lexicon parser before treating 0.79 as current MiniLM-on.
 
 ## Method
 
-1. Parse slots from the shopper message (category including Amazon plurals, material, color, size, brand, budget). Category is the last noun in the `I'm looking for …` crumb; if none match, take the crumb string.
+1. Parse slots from the shopper message. Category prefers the longest catalog leaf / last-two crumb that appears in `I'm looking for …` (`Catalog.category_lexicon`). Regex noun list is fallback; then the raw crumb.
 2. Fill the last-asked weak slot from `what matters is:` replies.
 3. BM25 over sqlite FTS5, limit 81. Specific hard-slot tokens are AND. Hypernyms (`shoes`, `women`, `men`, `clothing`, …) and multi-word crumbs are not AND. Budget is not AND. Other query tokens are OR. Evaluator template words (`key`, `requirement`, `exploring`) are stopwords.
 4. Anonymized `preference_tags` are extra BM25 terms, not AND.

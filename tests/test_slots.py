@@ -65,6 +65,24 @@ class SlotsTest(unittest.TestCase):
         )
         self.assertEqual(slots.get("category"), "dresses")
 
+    def test_catalog_lexicon_prefers_full_crumb(self) -> None:
+        lexicon = (
+            "tees & blouses t-shirts",
+            "athletic walking",
+            "t-shirts",
+            "walking",
+        )
+        tees = parse_slots(
+            "I'm looking for Tees & Blouses T-Shirts. A key requirement is: cotton.",
+            category_lexicon=lexicon,
+        )
+        self.assertEqual(tees.get("category"), "tees & blouses t-shirts")
+        walk = parse_slots(
+            "I'm looking for Athletic Walking, but I'm still exploring.",
+            category_lexicon=lexicon,
+        )
+        self.assertEqual(walk.get("category"), "athletic walking")
+
     def test_leaf_noun_not_parent_crumb(self) -> None:
         tees = parse_slots(
             "I'm looking for Tees & Blouses T-Shirts. A key requirement is: cotton."

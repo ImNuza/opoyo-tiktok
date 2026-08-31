@@ -27,6 +27,18 @@ class CatalogTest(unittest.TestCase):
         self.assertTrue(catalog.contains("A"))
         self.assertFalse(catalog.contains("Z"))
 
+    def test_category_lexicon_has_leaf_and_last_two(self) -> None:
+        path = self._write([
+            {
+                "parent_asin": "A",
+                "title": "Go Walk",
+                "categories": ["Clothing, Shoes & Jewelry", "Women", "Athletic", "Walking"],
+            },
+        ])
+        catalog = Catalog(path)
+        self.assertIn("walking", catalog.category_lexicon)
+        self.assertIn("athletic walking", catalog.category_lexicon)
+
     def test_missing_file_raises(self) -> None:
         with self.assertRaises(CatalogError) as ctx:
             Catalog("/tmp/does-not-exist-opoyo-catalog.jsonl")

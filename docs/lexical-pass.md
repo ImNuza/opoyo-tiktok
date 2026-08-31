@@ -17,8 +17,9 @@ $env:OPOYO_NO_MINILM = "1"
 |--|--------|-----|------|------|
 | MiniLM-off before this pass | 0.645 | 0.407 | 7.53 | 0.514 |
 | After crumb / hypernym / no budget AND | 0.695 | 0.404 | 6.96 | 0.550 |
-| **+ last noun in crumb (MiniLM off)** | **0.715** | 0.406 | **6.87** | **0.562** |
-| **Same parse + MiniLM on (current)** | **0.790** | 0.408 | **6.27** | **0.612** |
+| **+ last noun in crumb (MiniLM off)** | 0.715 | 0.406 | 6.87 | 0.562 |
+| **+ catalog category lexicon (MiniLM off, current)** | **0.810** | 0.423 | **6.28** | **0.626** |
+| Same parse + MiniLM on (before lexicon) | 0.790 | 0.408 | 6.27 | 0.612 |
 | Previous MiniLM freeze, old parser (`cad6c1c`) | 0.77 | 0.457 | 6.78 | 0.607 |
 
 Scenario Hit@10 MiniLM off: browsing 0.763, buying 0.713, boundary 0.90, intent_override 0.533.  
@@ -32,6 +33,12 @@ Scoring path is still Policy C + FTS5 BM25 `limit=81` + MiniLM shortlist 50. Cha
 
 1. **Crumb parse + last noun** (`agent/slots.py`)  
    Simulator first messages are `I'm looking for {coarse_category}…`. Category is the **last** `_CATEGORY_WORDS` hit in that crumb (`Tees & Blouses T-Shirts` → `shirts`, not `blouses`). If no noun matches, the crumb string becomes `category`. No extra clothing gazetteer from public titles.
+
+1b. **Catalog category lexicon** (`agent/catalog.py` `build_category_lexicon`)  
+   Unique leaves and last-two crumbs from `catalog.jsonl`, longest substring match on the looking-for crumb. This **replaces the closed wordlist** for simulator crumbs (`athletic walking`, `tees & blouses t-shirts`). Regex list is fallback only. MiniLM-off Hit **0.715 → 0.81**.
+
+1c. **Categories-column fill** (`agent/retrieve.py`)  
+   If BM25 AND returns fewer than 81, append FTS `categories:"token"` hits. Hit stayed 0.81 (kept).
 
 2. **Hypernym / crumb AND** (`agent/retrieve.py` `and_required_terms`)  
    Hard-slot tokens used to all be AND-ed. `shoes` / `women` / `men` / `clothing` (and plurals) are no longer required MATCH; they stay as OR/BM25 terms. Multi-word crumbs are not AND-ed token-by-token.
@@ -49,6 +56,7 @@ Material AND is **unchanged** (dropping it previously cut MiniLM-on Hit to 0.745
 | BM25 `limit` 81 → **200** and shortlist 50 → 200 | Hit/MRR/MTTC **identical** to 81. MiniLM off: Top 10 **is** BM25 top 10, so a longer page cannot promote gold at rank 82. Reverted to 81 / 50. |
 | Skip AND on generic materials (`cotton`/`polyester`/`fabric`/…) | Hit **0.710** (below 0.715). Reverted. Material AND is still load-bearing on MiniLM-off. |
 | Skip `leather` AND when category is wallet/handbag | Hit **identical** 0.715. Reverted as dead code. |
+| Singular/plural OR (`clog`/`clogs`) on extras + category fill | MiniLM-off Hit **0.765** (below 0.81). Reverted. |
 
 MiniLM on the 50-shortlist **does** promote in-list gold (Hit 0.715 → 0.79). It does not recover gold past BM25 81. Do not retry BM25 200 / shortlist 100 without a new measurement; the old MiniLM-on widen still hurt MTTC.
 

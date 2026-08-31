@@ -42,7 +42,11 @@ class Agent:
             state = self._sessions[session_id]
             state.turn = turn
 
-            parsed = parse_slots(user_message, profile=state.profile)
+            parsed = parse_slots(
+                user_message,
+                profile=state.profile,
+                category_lexicon=self.catalog.category_lexicon,
+            )
             if (
                 state.last_asked in WEAK_FILL
                 and state.last_asked not in parsed

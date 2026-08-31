@@ -122,7 +122,26 @@ _LOOKING_FOR_RE = re.compile(
 )
 
 
-def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
+def _lexicon_category(crumb: str, lexicon: tuple[str, ...] | None) -> str | None:
+    if not crumb or not lexicon:
+        return None
+    text = crumb.lower()
+    for entry in lexicon:
+        if len(entry) < 3:
+            continue
+        if entry == text:
+            return entry
+        pattern = r"(?<![a-z0-9])" + re.escape(entry) + r"(?![a-z0-9])"
+        if re.search(pattern, text):
+            return entry
+    return None
+
+
+def parse_slots(
+    message: str,
+    profile: dict | None = None,
+    category_lexicon: tuple[str, ...] | None = None,
+) -> dict[str, str]:
     if not message or not message.strip():
         return {}
 
@@ -141,12 +160,16 @@ def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
     crumb = ""
     if looking:
         crumb = re.sub(r"\s+", " ", looking.group(1)).strip(" .;,-")
-    noun_src = crumb or text
-    noun_hits = list(_CATEGORY_RE.finditer(noun_src))
-    if noun_hits:
-        slots["category"] = noun_hits[-1].group(1).lower()
-    elif crumb:
-        slots["category"] = crumb.lower()
+    lex_hit = _lexicon_category(crumb, category_lexicon)
+    if lex_hit:
+        slots["category"] = lex_hit
+    else:
+        noun_src = crumb or text
+        noun_hits = list(_CATEGORY_RE.finditer(noun_src))
+        if noun_hits:
+            slots["category"] = noun_hits[-1].group(1).lower()
+        elif crumb:
+            slots["category"] = crumb.lower()
 
     size_prefix = _SIZE_PREFIX_RE.search(text)
     if size_prefix:
