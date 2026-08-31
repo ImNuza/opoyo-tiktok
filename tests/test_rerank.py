@@ -23,6 +23,19 @@ class RerankTest(unittest.TestCase):
         ids = ["A", "B"]
         self.assertEqual(rerank(ids, "blue shoe", {}, texts=None), ids)
 
+    def test_opoyo_no_minilm_skips_encoder(self) -> None:
+        import os
+
+        ids = ["A", "B"]
+        os.environ["OPOYO_NO_MINILM"] = "1"
+        try:
+            self.assertEqual(
+                rerank(ids, "blue shoe", {}, texts={"A": "aaa", "B": "bbb"}),
+                ids,
+            )
+        finally:
+            os.environ.pop("OPOYO_NO_MINILM", None)
+
 
 if __name__ == "__main__":
     unittest.main()

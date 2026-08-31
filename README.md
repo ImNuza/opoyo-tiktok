@@ -137,6 +137,8 @@ docs/agent_api_contract.json      machine-readable Agent contract
 docs/evaluation_config.json       scoring configuration
 docs/baseline_results.json        reproducible weak-starter reference score
 docs/opoyo_public200.json         frozen Opoyo public-200 score (MiniLM on)
+docs/opoyo_public200_lexical.json MiniLM-off public-200 after lexical pass (Hit 0.695)
+docs/lexical-pass.md              crumb parse / hypernym AND; reverted dead ends
 docs/method.md                    method, MiniLM fail-closed, cost $0, limits
 docs/miss-log.md                  eight real public-200 misses
 docs/scoring-findings-2026-08-30.md  dual-track / AND / title-union fails; freeze reprint
