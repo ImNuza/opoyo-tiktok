@@ -60,6 +60,8 @@ def rerank(
 ) -> list[str]:
     """Return shortlist order. Local MiniLM is fail-closed. DeepSeek unused."""
     try:
+        if os.environ.get("OPOYO_NO_MINILM", "").strip() in {"1", "true", "yes"}:
+            return shortlist
         if texts:
             local = _local_rerank(shortlist, message, slots, texts)
             if local:

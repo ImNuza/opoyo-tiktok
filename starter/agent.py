@@ -69,7 +69,7 @@ class Agent:
                 required=[
                     value
                     for key, value in state.slots.items()
-                    if key in HARD_CONSTRAINTS
+                    if key in HARD_CONSTRAINTS and key != "budget"
                 ],
             )
             shortlist = matched[:50]

@@ -32,6 +32,28 @@ def _terms(text: str) -> list[str]:
     ]
 
 
+HYPERNYM_TOKENS = frozenset({
+    "shoes", "clothing", "clothes", "women", "womens", "men", "mens",
+    "boys", "girls", "jewelry", "jewellery",
+})
+
+
+def and_required_terms(required: list[str] | None) -> list[str]:
+    """AND only specific single-token constraints. Hypernyms and multi-word
+    crumbs stay in the OR query instead of required MATCH."""
+    terms: list[str] = []
+    for value in required or []:
+        tokens = _terms(value)
+        if len(tokens) != 1:
+            continue
+        token = tokens[0]
+        if token in HYPERNYM_TOKENS:
+            continue
+        if token not in terms:
+            terms.append(token)
+    return terms[:20]
+
+
 def build_query(message: str, slots: dict[str, str], extra: list[str] | None = None) -> str:
     parts: list[str] = []
     seen: set[str] = set()
@@ -116,12 +138,7 @@ class Retriever:
         required: list[str] | None = None,
     ) -> list[str]:
         query_terms = list(dict.fromkeys(_terms(query)))[:40]
-        required_terms: list[str] = []
-        for value in required or []:
-            for token in _terms(value):
-                if token not in required_terms:
-                    required_terms.append(token)
-        required_terms = required_terms[:20]
+        required_terms = and_required_terms(required)
         extra_terms = [term for term in query_terms if term not in required_terms][:20]
 
         if required_terms:

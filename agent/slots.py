@@ -116,6 +116,10 @@ _BUDGET_RE = re.compile(
     re.IGNORECASE,
 )
 _BRAND_BY_RE = re.compile(r"\bby\s+([A-Za-z][\w-]*)", re.IGNORECASE)
+_LOOKING_FOR_RE = re.compile(
+    r"i'?m looking for\s+(.+?)(?:\.|,?\s+but i'?m still exploring|$)",
+    re.IGNORECASE,
+)
 
 
 def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
@@ -136,6 +140,12 @@ def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
     category_match = _CATEGORY_RE.search(text)
     if category_match:
         slots["category"] = category_match.group(1).lower()
+    else:
+        looking = _LOOKING_FOR_RE.search(text)
+        if looking:
+            crumb = re.sub(r"\s+", " ", looking.group(1)).strip(" .;,-")
+            if crumb:
+                slots["category"] = crumb.lower()
 
     size_prefix = _SIZE_PREFIX_RE.search(text)
     if size_prefix:

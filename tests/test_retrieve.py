@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from agent.catalog import Catalog
-from agent.retrieve import Retriever, build_query, _terms
+from agent.retrieve import Retriever, and_required_terms, build_query, _terms
 
 
 def write_catalog(rows: list[dict]) -> Path:
@@ -102,6 +102,38 @@ class RetrieveTest(unittest.TestCase):
             required=["red", "shoe"],
         )
         self.assertEqual(and_ids, ["HIT"])
+
+    def test_hypernym_shoes_is_not_anded(self) -> None:
+        self.assertEqual(and_required_terms(["shoes"]), [])
+        self.assertEqual(and_required_terms(["wallets"]), ["wallets"])
+        self.assertEqual(and_required_terms(["leather wallets"]), [])
+        self.assertEqual(and_required_terms(["leather"]), ["leather"])
+        self.assertEqual(and_required_terms(["fabric"]), ["fabric"])
+
+    def test_hypernym_and_does_not_drop_clogs(self) -> None:
+        path = write_catalog([
+            {
+                "parent_asin": "CLOG",
+                "title": "Classic Clog",
+                "categories": ["Mules & Clogs"],
+                "features": [],
+                "details": {},
+                "store": "Crocs",
+                "description": "clog",
+            },
+            {
+                "parent_asin": "SHOE",
+                "title": "Road running shoe",
+                "categories": ["Shoes"],
+                "features": [],
+                "details": {},
+                "store": "Example",
+                "description": "shoe",
+            },
+        ])
+        retriever = Retriever(Catalog(path))
+        ids = retriever.search("mules clogs", limit=10, required=["shoes"])
+        self.assertIn("CLOG", ids)
 
 
 if __name__ == "__main__":

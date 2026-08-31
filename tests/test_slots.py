@@ -49,6 +49,22 @@ class SlotsTest(unittest.TestCase):
         self.assertEqual(parse_slots("need size m shoes").get("size"), "m")
         self.assertEqual(parse_slots("need size 10 shoes").get("size"), "10")
 
+    def test_crumb_fills_category_when_no_noun(self) -> None:
+        slots = parse_slots(
+            "I'm looking for Athletic Walking, but I'm still exploring."
+        )
+        self.assertEqual(slots.get("category"), "athletic walking")
+        rain = parse_slots(
+            "I'm looking for Outdoor & Work Rain, but I'm still exploring."
+        )
+        self.assertEqual(rain.get("category"), "outdoor & work rain")
+
+    def test_named_noun_wins_over_crumb(self) -> None:
+        slots = parse_slots(
+            "I'm looking for Dresses Casual. A key requirement is: fabric."
+        )
+        self.assertEqual(slots.get("category"), "dresses")
+
     def test_empty_message(self) -> None:
         self.assertEqual(parse_slots(""), {})
 
