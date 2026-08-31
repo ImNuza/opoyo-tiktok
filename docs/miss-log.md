@@ -35,3 +35,7 @@ public_0074 | browsing | Athletic Walking (Skechers Go Walk) | retrieval: no cat
 ## After freeze (2026-08-30)
 
 Dual-track + hypernym expansion (`76ef77f`) printed Hit 0.69. Bidirectional hypernym AND (`0f31b23`) also printed Hit 0.69; of the eight freeze misses above, only `public_0015` flipped. Dense title-union printed Hit 0.73 / MTTC 7.265 on scratch and was reverted. Scoring files on `main` stay at `cad6c1c` (`b50a95b`). See `docs/scoring-findings-2026-08-30.md`.
+
+## 31 Aug 2026
+
+Python BM25 drop-in vs FTS5, same tokens and AND/OR, worktree `scratch/bm25-custom`. Turn-1 gold-in-81: 117 vs 115, miss_enter 6, leave_hits 4. No full 200. One-way shoes hyponym: 115 vs 115. Neither merged.

@@ -36,6 +36,8 @@ Do not commit `.env`, `data/catalog.jsonl`, or `results.json`.
 - Do not ship dual-track router + answerable FIELD_ORDER + hypernym BM25 expansion. Public-200 MiniLM on `76ef77f` (that stack, AND already reverted): Hit 0.69, MRR 0.437931, MTTC 6.135, tech 0.573679. Floor Hit 0.77 / MTTC 6.83.
 - Do not AND bidirectional hypernym families on browsing (`0f31b23`). Public-200 MiniLM: Hit 0.69, MRR 0.433944, MTTC 6.13, tech 0.572583. Hit-neutral vs dual-track without AND. Of the eight freeze misses, only `public_0015` flipped. Reverted as `76ef77f`.
 - Do not dense title-union (BM25 81 ∪ title cosine 81, MiniLM on the union). Probe `miss_enter=3` / `leave_hits=0`. Public-200 MiniLM: Hit 0.73, MRR 0.457063, MTTC 7.265, tech 0.576819. Reverted on scratch. Do not retry MiniLM-on-full-union or RRF of the same first-stage.
+- Do not rewrite BM25 in Python as a drop-in for FTS5. Turn-1 gold-in-81: enter_fts 115, enter_py 117, miss_enter 6, leave_hits 4. Skip full eval. Worktree `scratch/bm25-custom`. Do not merge.
+- Do not one-way hyponym-OR `clog`/`mule`/`loafer` by dropping AND `shoes`. Turn-1 gold-in-81 identical to freeze (115/115). No-op.
 
 ## Remaining (in order)
 
