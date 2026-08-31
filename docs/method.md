@@ -1,6 +1,6 @@
 # Opoyo method
 
-Track 4 shopping copilot. Public 200 MiniLM off + catalog category lexicon: Hit Rate@10 0.81, MRR 0.422776, MTTC 6.28, tech 0.626233 (`docs/opoyo_public200_lexical.json`; 162/200 hits). MiniLM on the previous (regex-only) parse: Hit Rate@10 0.79 (`docs/opoyo_public200.json`). Previous MiniLM freeze on the old parser (`cad6c1c`): Hit 0.77. Older stdlib MiniLM-off note: Hit Rate@10 0.55. Re-run MiniLM on the lexicon parser before treating 0.79 as current MiniLM-on.
+Track 4 shopping copilot. Public 200 catalog lexicon + MiniLM on: Hit Rate@10 0.83, MRR 0.40695, MTTC 6.065, tech 0.635785 (`docs/opoyo_public200.json`; 166/200 hits). Same parser MiniLM off: Hit Rate@10 0.81 (`docs/opoyo_public200_lexical.json`). MiniLM on regex-only parse was 0.79. Previous freeze `cad6c1c`: Hit 0.77.
 
 ## Method
 

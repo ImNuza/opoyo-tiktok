@@ -39,7 +39,7 @@ Official starter on the public set:
 - MRR: 0.068034
 - MTTC: 9.81
 
-Opoyo BM25+policy (public 200): Hit Rate@10 0.715 without MiniLM. With local MiniLM cross-encoder (fail-closed): Hit Rate@10 0.79, MRR 0.407956, MTTC 6.265, tech 0.612087.
+Opoyo BM25+policy (public 200): Hit Rate@10 0.81 without MiniLM. With local MiniLM cross-encoder (fail-closed): Hit Rate@10 0.83, MRR 0.40695, MTTC 6.065, tech 0.635785.
 
 ## What You Receive
 
@@ -85,7 +85,7 @@ The command writes per-session results and aggregate metrics to `results.json`.
 
 Official weak BM25 starter: Hit Rate@10 `0.125`, MRR `0.068034`, MTTC `9.81`. See `docs/baseline_results.json`.
 
-This fork, public 200: Hit Rate@10 0.715 without MiniLM. With local MiniLM: Hit Rate@10 0.79, MRR 0.407956, MTTC 6.265. See `docs/opoyo_public200.json`.
+This fork, public 200: Hit Rate@10 0.81 without MiniLM. With local MiniLM: Hit Rate@10 0.83, MRR 0.40695, MTTC 6.065. See `docs/opoyo_public200.json`.
 
 ## Agent Interface
 
@@ -136,7 +136,7 @@ docs/competition_specification.md participant rules and evaluation protocol
 docs/agent_api_contract.json      machine-readable Agent contract
 docs/evaluation_config.json       scoring configuration
 docs/baseline_results.json        reproducible weak-starter reference score
-docs/opoyo_public200.json         frozen Opoyo public-200 score (MiniLM on, Hit 0.79)
+docs/opoyo_public200.json         frozen Opoyo public-200 score (MiniLM on, Hit 0.83)
 docs/opoyo_public200_lexical.json MiniLM-off public-200 after catalog lexicon (Hit 0.81)
 docs/lexical-pass.md              crumb parse / hypernym AND; reverted dead ends
 docs/method.md                    method, MiniLM fail-closed, cost $0, limits

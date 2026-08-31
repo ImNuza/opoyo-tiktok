@@ -18,8 +18,9 @@ $env:OPOYO_NO_MINILM = "1"
 | MiniLM-off before this pass | 0.645 | 0.407 | 7.53 | 0.514 |
 | After crumb / hypernym / no budget AND | 0.695 | 0.404 | 6.96 | 0.550 |
 | **+ last noun in crumb (MiniLM off)** | 0.715 | 0.406 | 6.87 | 0.562 |
-| **+ catalog category lexicon (MiniLM off, current)** | **0.810** | 0.423 | **6.28** | **0.626** |
-| Same parse + MiniLM on (before lexicon) | 0.790 | 0.408 | 6.27 | 0.612 |
+| **+ catalog category lexicon (MiniLM off)** | 0.810 | 0.423 | 6.28 | 0.626 |
+| **+ MiniLM on lexicon parse (current)** | **0.830** | 0.407 | **6.07** | **0.636** |
+| MiniLM on regex-only parse | 0.790 | 0.408 | 6.27 | 0.612 |
 | Previous MiniLM freeze, old parser (`cad6c1c`) | 0.77 | 0.457 | 6.78 | 0.607 |
 
 Scenario Hit@10 MiniLM off: browsing 0.763, buying 0.713, boundary 0.90, intent_override 0.533.  

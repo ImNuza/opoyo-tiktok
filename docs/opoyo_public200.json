@@ -2,30 +2,34 @@
   "baseline": "opoyo_bm25_policy_minilm",
   "dataset": "data/public_set.jsonl",
   "sample_count": 200,
-  "hit_rate_at_10": 0.79,
-  "mrr": 0.407956,
-  "mttc": 6.265,
-  "efficiency": 0.4735,
-  "technical_score": 0.612087,
-  "without_minilm_hit_rate_at_10": 0.715,
+  "hit_rate_at_10": 0.83,
+  "mrr": 0.40695,
+  "mttc": 6.065,
+  "efficiency": 0.4935,
+  "technical_score": 0.635785,
+  "without_minilm_hit_rate_at_10": 0.81,
   "bm25_limit": 81,
   "minilm_shortlist": 50,
-  "hits": 158,
-  "misses": 42,
+  "hits": 166,
+  "misses": 34,
   "scenario_metrics": {
-    "boundary": {"sample_count": 10, "hit_rate_at_10": 0.8, "mrr": 0.436667, "mttc": 5.1},
-    "browsing": {"sample_count": 80, "hit_rate_at_10": 0.8, "mrr": 0.442614, "mttc": 6.5875},
-    "buying": {"sample_count": 80, "hit_rate_at_10": 0.8125, "mrr": 0.373388, "mttc": 5.7875},
-    "intent_override": {"sample_count": 30, "hit_rate_at_10": 0.7, "mrr": 0.398148, "mttc": 7.066667}
+    "boundary": {"sample_count": 10, "hit_rate_at_10": 0.9, "mrr": 0.354722, "mttc": 4.1},
+    "browsing": {"sample_count": 80, "hit_rate_at_10": 0.8625, "mrr": 0.473879, "mttc": 6.35},
+    "buying": {"sample_count": 80, "hit_rate_at_10": 0.8, "mrr": 0.342684, "mttc": 5.975},
+    "intent_override": {"sample_count": 30, "hit_rate_at_10": 0.8, "mrr": 0.417262, "mttc": 6.2}
+  },
+  "previous_minilm_regex_parse": {
+    "hit_rate_at_10": 0.79,
+    "mrr": 0.407956,
+    "mttc": 6.265,
+    "technical_score": 0.612087
   },
   "previous_freeze": {
     "commit": "cad6c1c",
     "hit_rate_at_10": 0.77,
     "mrr": 0.457494,
     "mttc": 6.78,
-    "technical_score": 0.606648,
-    "without_minilm_hit_rate_at_10": 0.55
+    "technical_score": 0.606648
   },
-  "commit": "2a47863",
-  "note": "Lexical parse (last crumb noun, hypernym not AND, budget not AND) + MiniLM on BM25 shortlist of 50. Windows CPU torch 2.13.0, sentence-transformers 6.0.0. Token usage 0. Compared with MiniLM-off Hit 0.715 in docs/opoyo_public200_lexical.json."
+  "note": "Catalog category lexicon + categories-column fill + MiniLM shortlist 50. Windows CPU torch 2.13.0, sentence-transformers 6.0.0. Wall ~9.5 min. Token usage 0."
 }
