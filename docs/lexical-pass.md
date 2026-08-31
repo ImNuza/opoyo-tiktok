@@ -16,18 +16,18 @@ $env:OPOYO_NO_MINILM = "1"
 | | Hit@10 | MRR | MTTC | Tech |
 |--|--------|-----|------|------|
 | MiniLM-off before this pass | 0.645 | 0.407 | 7.53 | 0.514 |
-| **This pass** | **0.695** | 0.404 | **6.96** | **0.550** |
+| After crumb / hypernym / no budget AND | 0.695 | 0.404 | 6.96 | 0.550 |
+| **+ last noun in crumb (current)** | **0.715** | 0.406 | **6.87** | **0.562** |
 | Historical MiniLM-on floor (`docs/opoyo_public200.json`) | 0.77 | 0.457 | 6.78 | 0.607 |
-| Older stdlib MiniLM-off note in method.md | 0.55 | — | — | — |
 
-Scenario Hit@10 after this pass: browsing 0.75, buying 0.688, boundary 0.80, intent_override 0.533 (unchanged).
+Scenario Hit@10 now: browsing 0.763, buying 0.713, boundary 0.90, intent_override 0.533 (unchanged).
 
 ## What landed (keep)
 
 Scoring path is still Policy C + FTS5 BM25 `limit=81` + MiniLM shortlist 50. Changes are intent → query only.
 
-1. **Crumb parse** (`agent/slots.py`)  
-   Simulator first messages are `I'm looking for {coarse_category}…`. If no word in `_CATEGORY_WORDS` matches, the crumb string becomes `category` (e.g. `athletic walking`, `outdoor & work rain`). Named nouns still win (`Dresses Casual` → `dresses`). No extra clothing gazetteer from public titles.
+1. **Crumb parse + last noun** (`agent/slots.py`)  
+   Simulator first messages are `I'm looking for {coarse_category}…`. Category is the **last** `_CATEGORY_WORDS` hit in that crumb (`Tees & Blouses T-Shirts` → `shirts`, not `blouses`). If no noun matches, the crumb string becomes `category`. No extra clothing gazetteer from public titles.
 
 2. **Hypernym / crumb AND** (`agent/retrieve.py` `and_required_terms`)  
    Hard-slot tokens used to all be AND-ed. `shoes` / `women` / `men` / `clothing` (and plurals) are no longer required MATCH; they stay as OR/BM25 terms. Multi-word crumbs are not AND-ed token-by-token.
@@ -43,6 +43,8 @@ Material AND is **unchanged** (dropping it previously cut MiniLM-on Hit to 0.745
 |-----|--------|
 | Union-fill AND results with looser OR up to 81; skip generic-material AND (`fabric`/`cotton`); drop utterance + tags from the BM25 query | Hit **0.51** (below 0.645). Reverted. |
 | BM25 `limit` 81 → **200** and shortlist 50 → 200 | Hit/MRR/MTTC **identical** to 81. MiniLM off: Top 10 **is** BM25 top 10, so a longer page cannot promote gold at rank 82. Reverted to 81 / 50. |
+| Skip AND on generic materials (`cotton`/`polyester`/`fabric`/…) | Hit **0.710** (below 0.715). Reverted. Material AND is still load-bearing on MiniLM-off. |
+| Skip `leather` AND when category is wallet/handbag | Hit **identical** 0.715. Reverted as dead code. |
 
 Do not retry those without a reranker that can promote ranks 11–200 into Top 10.
 

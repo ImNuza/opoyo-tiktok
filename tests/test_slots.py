@@ -65,6 +65,24 @@ class SlotsTest(unittest.TestCase):
         )
         self.assertEqual(slots.get("category"), "dresses")
 
+    def test_leaf_noun_not_parent_crumb(self) -> None:
+        tees = parse_slots(
+            "I'm looking for Tees & Blouses T-Shirts. A key requirement is: cotton."
+        )
+        self.assertEqual(tees.get("category"), "shirts")
+        tunics = parse_slots(
+            "I'm looking for Tees & Blouses Tunics. A key requirement is: polyester."
+        )
+        self.assertEqual(tunics.get("category"), "tunics")
+        tanks = parse_slots(
+            "I'm looking for Shirts Tanks Tops. A key requirement is: polyester."
+        )
+        self.assertEqual(tanks.get("category"), "tanks")
+        caps = parse_slots(
+            "I'm looking for Hats & Caps Baseball Caps. A key requirement is: polyester."
+        )
+        self.assertEqual(caps.get("category"), "caps")
+
     def test_empty_message(self) -> None:
         self.assertEqual(parse_slots(""), {})
 

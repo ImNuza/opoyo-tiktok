@@ -137,15 +137,16 @@ def parse_slots(message: str, profile: dict | None = None) -> dict[str, str]:
     if material_match:
         slots["material"] = material_match.group(1).lower()
 
-    category_match = _CATEGORY_RE.search(text)
-    if category_match:
-        slots["category"] = category_match.group(1).lower()
-    else:
-        looking = _LOOKING_FOR_RE.search(text)
-        if looking:
-            crumb = re.sub(r"\s+", " ", looking.group(1)).strip(" .;,-")
-            if crumb:
-                slots["category"] = crumb.lower()
+    looking = _LOOKING_FOR_RE.search(text)
+    crumb = ""
+    if looking:
+        crumb = re.sub(r"\s+", " ", looking.group(1)).strip(" .;,-")
+    noun_src = crumb or text
+    noun_hits = list(_CATEGORY_RE.finditer(noun_src))
+    if noun_hits:
+        slots["category"] = noun_hits[-1].group(1).lower()
+    elif crumb:
+        slots["category"] = crumb.lower()
 
     size_prefix = _SIZE_PREFIX_RE.search(text)
     if size_prefix:

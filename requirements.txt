@@ -1,3 +1,3 @@
 # Scoring path is Python 3.10+ stdlib (sqlite3 FTS5). No package is required.
 # Optional local MiniLM rerank. Import is fail-closed; missing torch keeps BM25 order.
-# sentence-transformers>=3.0.0
+sentence-transformers>=3.0.0

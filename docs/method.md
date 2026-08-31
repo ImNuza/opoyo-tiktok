@@ -1,10 +1,10 @@
 # Opoyo method
 
-Track 4 shopping copilot. Public 200 (MiniLM on): Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78, tech 0.606648 (`docs/opoyo_public200.json`). MiniLM off after the lexical pass: Hit Rate@10 0.695, MRR 0.404413, MTTC 6.96, tech 0.549624 (`docs/opoyo_public200_lexical.json`). Older stdlib MiniLM-off note: Hit Rate@10 0.55.
+Track 4 shopping copilot. Public 200 (MiniLM on): Hit Rate@10 0.77, MRR 0.457494, MTTC 6.78, tech 0.606648 (`docs/opoyo_public200.json`). MiniLM off after the lexical pass: Hit Rate@10 0.715, MRR 0.406214, MTTC 6.865, tech 0.562064 (`docs/opoyo_public200_lexical.json`). Older stdlib MiniLM-off note: Hit Rate@10 0.55.
 
 ## Method
 
-1. Parse slots from the shopper message (category including Amazon plurals, material, color, size, brand, budget). If no category noun matches, take the `I'm looking for …` crumb as `category`.
+1. Parse slots from the shopper message (category including Amazon plurals, material, color, size, brand, budget). Category is the last noun in the `I'm looking for …` crumb; if none match, take the crumb string.
 2. Fill the last-asked weak slot from `what matters is:` replies.
 3. BM25 over sqlite FTS5, limit 81. Specific hard-slot tokens are AND. Hypernyms (`shoes`, `women`, `men`, `clothing`, …) and multi-word crumbs are not AND. Budget is not AND. Other query tokens are OR. Evaluator template words (`key`, `requirement`, `exploring`) are stopwords.
 4. Anonymized `preference_tags` are extra BM25 terms, not AND.
